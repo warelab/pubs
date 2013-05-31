@@ -1,0 +1,14 @@
+[% title = 'Agency List' %]
+<h1>[% title %]</h1>
+<table>
+  <tr>
+    <th>Agency</th>
+    <th>URL Template</th>
+  </tr>
+  [% FOREACH agency IN agencies %]
+    <tr>
+      <td><a href="[% c.uri_for('/agency/view', agency.agency_id ) %]">[% agency.agency_name %]</a></td>
+      <td>[% agency.url_template OR 'NA' %]</td>
+    </tr>
+  [% END %]
+</table>

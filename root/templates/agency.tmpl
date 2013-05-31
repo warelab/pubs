@@ -1,0 +1,19 @@
+[% title = 'View Agency &quot;' _ (agency.agency_name OR 'unknown') _ '&quot;' %]
+
+<h1>[% title %]</h1>
+<table border=0>
+  <tr>
+    <th align="right">Agency Name:</th>
+    <td>[% agency.agency_name %]</td>
+  </tr>
+  <tr>
+    <th align="right">URL Template:</th>
+    <td>[% agency.url_template %]</td>
+  </tr>
+</table>
+
+[% IF agency.fundings.size > 0 %]
+  [% PROCESS 'fundings.tmpl' fundings=agency.fundings %]
+[% ELSE %]
+  No fundings.
+[% END %]

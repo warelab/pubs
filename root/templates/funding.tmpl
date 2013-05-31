@@ -1,0 +1,27 @@
+[% title = 'View Funding &quot;' _ (funding.title OR 'unknown') _ '&quot;' %]
+
+<h1>[% title %]</h1>
+<table border=0>
+  <tr>
+    <th align="right">Agency Name:</th>
+    <td>[% funding.agency_id %]</td>
+  </tr>
+  <tr>
+    <th align="right">Title:</th>
+    <td>[% funding.title OR 'NA' %]</td>
+  </tr>
+  <tr>
+    <th align="right">Award Number:</th>
+    <td>[% funding.award_number OR 'NA' %]</td>
+  </tr>
+  <tr>
+    <th align="right">Abstract:</th>
+    <td>[% funding.abstract OR 'NA' %]</td>
+  </tr>
+</table>
+
+[% IF funding.pubs.size > 0 %]
+  [% PROCESS 'pubs.tmpl' pubs=funding.pubs %]
+[% ELSE %]
+  No pubs.
+[% END %]

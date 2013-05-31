@@ -1,0 +1,76 @@
+package WarePubs::Controller::Funding;
+use Moose;
+use namespace::autoclean;
+
+BEGIN { extends 'Catalyst::Controller'; }
+
+=head1 NAME
+
+WarePubs::Controller::Funding - Catalyst Controller
+
+=head1 DESCRIPTION
+
+Catalyst Controller.
+
+=head1 METHODS
+
+=cut
+
+# ----------------------------------------------------------------------
+=head2 index
+
+=cut
+
+sub index :Path :Args(0) {
+    my ( $self, $c ) = @_;
+
+    $c->response->body('Matched WarePubs::Controller::Funding in Funding.');
+}
+
+# ----------------------------------------------------------------------
+=head2 list
+ 
+Fetch all fundings.
+ 
+=cut
+ 
+sub list :Local {
+    my ($self, $c) = @_;
+ 
+    $c->stash(
+        fundings => [ $c->model('DB::Funding')->all ],
+        template => 'fundings.tmpl',
+    );
+}
+
+# ----------------------------------------------------------------------
+=head2 view
+ 
+Detail for a single funding.
+ 
+=cut
+ 
+sub view :Local {
+    my ( $self, $c, $funding_id ) = @_;
+ 
+    $c->stash(
+        funding  => $c->model('DB')->resultset('Funding')->find($funding_id),
+        template => 'funding.tmpl'
+    );
+}
+
+# ----------------------------------------------------------------------
+=head1 AUTHOR
+
+Ken Youens-Clark
+
+=head1 LICENSE
+
+This library is free software. You can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut
+
+__PACKAGE__->meta->make_immutable;
+
+1;

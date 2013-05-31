@@ -1,0 +1,17 @@
+<h1>Fundings ([% fundings.size OR '0' %])</h1>
+<table>
+  <tr>
+    <th>Agency</th>
+    <th>Award Title</th>
+    <th>Award Number</th>
+    <th>Abstract</th>
+  </tr>
+  [% FOREACH funding IN fundings %]
+    <tr>
+      <td><a href="[% c.uri_for('/agency/view', funding.agency_id) %]">[% funding.agency.agency_name %]</a></td>
+      <td><a href="[% c.uri_for('/funding/view', funding.funding_id) %]">[% funding.title OR 'NA' %]</a></td>
+      <td>[% funding.award_number OR 'NA' %]</td>
+      <td>[% funding.abstract OR 'NA' %]</td>
+    </tr>
+  [% END %]
+</table>

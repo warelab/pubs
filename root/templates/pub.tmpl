@@ -1,0 +1,61 @@
+[% title = 'View Pub &quot;' _ pub.title _ '&quot;' %]
+
+<h1>[% title %]</h1>
+<form method="post" action="[% c.uri_for('/pub/update') %]">
+<table border=0>
+  <tr>
+    <th align="right">Agency:</th>
+    <td><a href="[% c.uri_for('/agency/view', pub.funding.agency.id) %]">[% pub.funding.agency.agency_name %]</a></td>
+  </tr>
+  <tr>
+    <th align="right">Funding:</th>
+    <td><a href="[% c.uri_for('/agency/view', pub.funding.id) %]">[% pub.funding.title OR 'unknown' %]</a></td>
+  </tr>
+  <tr>
+    <th align="right">Title:</th>
+    <td><textarea row="10" cols="70">[% pub.title %]</textarea></td>
+  </tr>
+  <tr>
+    <th align="right">Journal:</th>
+    <td><input value="[% pub.journal %]" size="60"></td>
+  </tr>
+  <tr>
+    <th align="right">Year:</th>
+    <td><input value="[% pub.year %]" size="60"></td>
+  </tr>
+  <tr>
+    <th align="right">Authors:</th>
+    <td><input value="[% pub.authors %]" size="60"></td>
+  </tr>
+  <tr>
+    <th align="right">PubMed ID:</th>
+    <td><input value="[% pub.pubmed %]" size="60"></td>
+  </tr>
+  <tr>
+    <th align="right">URL:</th>
+    <td><input value="[% pub.url %]" size="60"></td>
+  </tr>
+  <tr>
+    <th align="right">Data:</th>
+    <td><input value="[% pub.data %]" size="60"></td>
+  </tr>
+  <tr>
+    <th align="right">Cover:</th>
+    <td><input value="[% pub.cover %]" size="60"></td>
+  </tr>
+  <tr>
+    <th align="right">PDF:</th>
+    <td><input value="[% pub.pdf %]" size="60"></td>
+  </tr>
+  <tr>
+    <th align="right">Info 115:</th>
+    <td><input value="[% pub.info_115 %]" size="60"></td>
+  </tr>
+  <tr>
+    <td align="center" colspan="2">
+      <input type="hidden" name="pub_id" value="[% pub.id %]">
+      <input type="submit" value="Update">
+    </td>
+  </tr>
+</table>
+</form>
