@@ -13,9 +13,12 @@ requires 'Catalyst::Runtime' => '5.90030';
 requires 'Catalyst::Plugin::ConfigLoader';
 requires 'Catalyst::Plugin::Static::Simple';
 requires 'Catalyst::Action::RenderView';
+requires 'Catalyst::Restarter';
+requires 'Catalyst::View::TT';
 requires 'Moose';
 requires 'MooseX::MarkAsMethods';
 requires 'namespace::autoclean';
+requires 'Catalyst::Model::DBIC::Schema';
 requires 'Config::General'; # This should reflect the config file format you've chosen
                  # See Catalyst::Plugin::ConfigLoader for supported formats
 test_requires 'Test::More' => '0.88';
