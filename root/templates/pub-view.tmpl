@@ -1,6 +1,9 @@
 [% title = 'View Pub &quot;' _ pub.title _ '&quot;' %]
 
 <h1>[% title %]</h1>
+<a href="[% c.uri_for('/pub/list') %]">All pubs</a>
+<hr>
+
 <form method="post" action="[% c.uri_for('/pub/update') %]">
 <table border=0>
   <tr>

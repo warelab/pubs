@@ -36,10 +36,12 @@ Create a pub.
  
 sub create :Local {
     my ( $self, $c ) = @_;
+
+    my $pub = $c->model('DB')->resultset('Pub')->create({
+        foo => 'bar',
+    });
  
-    $c->stash(
-        template => 'pub.tmpl'
-    );
+    $c->forward( $c->uri_for('/pub/view', $pub->id ) );
 }
 
 # ----------------------------------------------------------------------
@@ -69,7 +71,7 @@ sub list :Local {
  
     $c->stash(
         pubs     => [ $c->model('DB::Pub')->all ],
-        template => 'pubs.tmpl',
+        template => 'pub-list.tmpl',
     );
 }
 
@@ -94,10 +96,7 @@ sub update :Local {
         journal => $journal,
     );
 
-    $c->stash(
-        pub      => $c->model('DB')->resultset('Pub')->find($pub_id),
-        template => 'pub.tmpl'
-    );
+    $c->forward( $c->uri_for('/pub/view', $pub->id ) );
 }
 
 # ----------------------------------------------------------------------
@@ -110,9 +109,12 @@ Detail for a single pub.
 sub view :Local {
     my ( $self, $c, $pub_id ) = @_;
  
+    my $pub = $c->model('DB')->resultset('Pub')->find($pub_id)
+              or die "Bad pub id '$pub_id'\n";
+
     $c->stash(
-        pub      => $c->model('DB')->resultset('Pub')->find($pub_id),
-        template => 'pub.tmpl'
+        pub      => $pub,
+        template => 'pub-view.tmpl'
     );
 }
 

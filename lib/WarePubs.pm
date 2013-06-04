@@ -1,4 +1,5 @@
 package WarePubs;
+
 use Moose;
 use namespace::autoclean;
 
@@ -37,20 +38,32 @@ our $VERSION = '0.01';
 
 __PACKAGE__->config(
     name => 'WarePubs',
+
     # Disable deprecated behavior needed by old applications
     disable_component_resolution_regex_fallback => 1,
+
     enable_catalyst_header => 1, # Send X-Catalyst header
+
+    'Plugin::ConfigLoader' => { 
+        file => __PACKAGE__->path_to('conf', 'warepubs.yml') 
+    },
+
     'Plugin::Static::Simple' => {
         dirs => [
             'static',
             qr/^(images|css)/,
         ],
-    }
+    },
+
+    'View::JSON' => {
+        allow_callback  => 1,    
+        callback_param  => 'cb',
+        # expose_stash    => [ qw(foo bar) ], # defaults to everything
+    },
 );
 
 # Start the application
 __PACKAGE__->setup();
-
 
 =head1 NAME
 

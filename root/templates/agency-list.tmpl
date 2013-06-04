@@ -1,5 +1,10 @@
-[% title = 'Agency List' %]
+[% title = 'Agencies (' _ (agencies.size OR '0') _ ')' %]
+
 <h1>[% title %]</h1>
+
+<a href="[% c.uri_for('/agency/create_form') %]">Create Agency</a>
+<hr>
+
 <table>
   <tr>
     <th>Agency</th>

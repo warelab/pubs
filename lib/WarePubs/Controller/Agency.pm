@@ -2,7 +2,7 @@ package WarePubs::Controller::Agency;
 use Moose;
 use namespace::autoclean;
 
-BEGIN { extends 'Catalyst::Controller'; }
+BEGIN { extends 'Catalyst::Controller::REST'; }
 
 =head1 NAME
 
@@ -15,6 +15,17 @@ Catalyst Controller.
 =head1 METHODS
 
 =cut
+
+# ----------------------------------------------------------------------
+=head2 info
+
+=cut
+
+sub info :Path :Args(0) {
+    my ( $self, $c ) = @_;
+
+    $self->status_ok( $c, { info => 'list, view, etc.' } );
+}
 
 # ----------------------------------------------------------------------
 =head2 index
@@ -39,7 +50,7 @@ sub list :Local {
  
     $c->stash(
         agencies => [ $c->model('DB::Agency')->all ],
-        template => 'agencies.tmpl',
+        template => 'agency-list.tmpl',
     );
 }
 
@@ -55,7 +66,7 @@ sub view :Local {
  
     $c->stash(
         agency   => $c->model('DB')->resultset('Agency')->find($agency_id),
-        template => 'agency.tmpl',
+        template => 'agency-view.tmpl',
     );
 }
 

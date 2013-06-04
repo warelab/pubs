@@ -39,7 +39,7 @@ sub list :Local {
  
     $c->stash(
         fundings => [ $c->model('DB::Funding')->all ],
-        template => 'fundings.tmpl',
+        template => 'funding-list.tmpl',
     );
 }
 
@@ -55,7 +55,7 @@ sub view :Local {
  
     $c->stash(
         funding  => $c->model('DB')->resultset('Funding')->find($funding_id),
-        template => 'funding.tmpl'
+        template => 'funding-view.tmpl'
     );
 }
 

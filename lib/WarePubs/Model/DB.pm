@@ -3,15 +3,7 @@ package WarePubs::Model::DB;
 use strict;
 use base 'Catalyst::Model::DBIC::Schema';
 
-__PACKAGE__->config(
-    schema_class => 'WarePubs::Schema',
-    
-    connect_info => {
-        dsn => 'dbi:mysql:warelab_pubs',
-        user => 'kclark',
-        password => 'g0p3rl!',
-    }
-);
+__PACKAGE__->config( schema_class => 'WarePubs::Schema' );
 
 =head1 NAME
 

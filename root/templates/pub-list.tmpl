@@ -1,7 +1,8 @@
-<h1>Publications</h1>
+[% title = 'Publications (' _ (pubs.size OR '0') _ ')' %]
+
+<h1>[% title %]</h1>
 
 <a href="[% c.uri_for('/pub/create_form') %]">Create Pub</a>
-
 <hr>
 
 <table>

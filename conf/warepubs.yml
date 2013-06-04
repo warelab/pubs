@@ -1,0 +1,11 @@
+name: WarePubs
+
+default_view: HTML
+
+jsonp: 1
+
+Model::DB:
+  connect_info:
+    dsn: 'dbi:mysql:warelab_pubs'
+    user: 'kclark'
+    password: 'g0p3rl!'
