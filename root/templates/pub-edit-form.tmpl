@@ -1,22 +1,16 @@
 [% title = 'Create Publication' %]
+
 <h1>[% title %]</h1>
 <hr>
 <form method="post" action="[% c.uri_for('/pub/create') %]">
 <table border=0>
   <tr>
     <th align="right">Agency:</th>
-    <td>
-      <select name="agency_id" onchange="alert(document.getElementById('agency_id'))">
-        <option value="0">--select agency--</option>
-        [% FOREACH agency IN agencies %]
-        <option value="[% agency.id %]">[% agency.agency_name %]</option>
-        [% END %]
-      </select>
-    </td>
+    <td><a href="[% c.uri_for('/agency/view', pub.funding.agency.id) %]">[% pub.funding.agency.agency_name %]</a></td>
   </tr>
   <tr>
     <th align="right">Funding:</th>
-    <td><div id="funding">--select agency--</div></td>
+    <td><a href="[% c.uri_for('/agency/view', pub.funding.id) %]">[% pub.funding.title OR 'unknown' %]</a></td>
   </tr>
   <tr>
     <th align="right">Title:</th>

@@ -1,4 +1,5 @@
 package WarePubs::Controller::Agency;
+
 use Moose;
 use namespace::autoclean;
 
@@ -21,10 +22,11 @@ Catalyst Controller.
 
 =cut
 
-sub info :Path :Args(0) {
+sub foo :Path :Args(0) {
     my ( $self, $c ) = @_;
 
     $self->status_ok( $c, { info => 'list, view, etc.' } );
+#    $c->response->body('info');
 }
 
 # ----------------------------------------------------------------------
@@ -49,7 +51,7 @@ sub list :Local {
     my ($self, $c) = @_;
  
     $c->stash(
-        agencies => [ $c->model('DB::Agency')->all ],
+        agencies => [ $c->model('DB')->resultset('Agency')->all ],
         template => 'agency-list.tmpl',
     );
 }

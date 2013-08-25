@@ -37,6 +37,7 @@ CREATE TABLE pub (
   cover char(255) NOT NULL DEFAULT '',
   pdf char(255) NOT NULL DEFAULT '',
   info_115 char(255) NOT NULL DEFAULT '',
+  hide_from_view tinyint NOT NULL DEFAULT '0',
   KEY (funding_id),
   FOREIGN KEY (funding_id) REFERENCES funding (funding_id)
 ) ENGINE=InnoDB;

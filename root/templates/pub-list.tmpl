@@ -7,7 +7,7 @@
 
 <table>
   <tr>
-    <th>Agency</th>
+    <th><a href="[% c.uri_for('/pub/list', 'order_by=agency_name') %]">Agency</a></th>
     <th>Funding</th>
     <th>Title</th>
     <th>Year</th>
@@ -18,7 +18,7 @@
   [% FOREACH pub IN pubs %]
     <tr>
       <td><a href="[% c.uri_for('/agency/view', pub.funding.agency.id) %]">[% pub.funding.agency.agency_name %]</a></td>
-      <td><a href="[% c.uri_for('/funding/view', pub.funding.id) %]">[% pub.funding.title %] ([% pub.funding.award_number %])</a></td>
+      <td><a href="[% c.uri_for('/funding/view', pub.funding.id) %]">[% pub.funding.title %]</a></td>
       <td><a href="[% c.uri_for('/pub/view', pub.id) %]">[% pub.title | truncate(40) %]</a></td>
       <td>[% pub.year %]</td>
       <td>[% pub.journal %]</td>

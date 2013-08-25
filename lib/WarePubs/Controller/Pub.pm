@@ -55,6 +55,7 @@ sub create_form :Local {
     my ( $self, $c ) = @_;
  
     $c->stash(
+        agencies => [ $c->model('DB')->resultset('Agency')->all ],
         template => 'pub-create-form.tmpl'
     );
 }

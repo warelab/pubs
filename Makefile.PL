@@ -12,6 +12,7 @@ all_from 'lib/WarePubs.pm';
 requires 'Catalyst::Runtime' => '5.90030';
 requires 'Catalyst::Action::RenderView';
 requires 'Catalyst::Controller::REST';
+requires 'Catalyst::View::JSON';
 requires 'Catalyst::Model::DBIC::Schema';
 requires 'Catalyst::Plugin::ConfigLoader';
 requires 'Catalyst::Plugin::Static::Simple';

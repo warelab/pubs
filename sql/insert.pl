@@ -9,7 +9,11 @@ my $file = shift or die 'No file';
 my $p    = Text::RecordParser::Tab->new( $file );
 my $db   = DBI->connect('dbi:mysql:warelab_pubs', 'kclark', 'g0p3rl!',
             {RaiseError => 1});
-my @flds = qw(year authors title journal pubmed url data cover pdf info_115);
+my @flds = qw(
+    year authors title journal pubmed url data 
+    cover pdf info_115 hide_from_view
+);
+
 my $sql  = sprintf( 
     'insert into pub (%s) values (%s)',
     join( ', ', @flds),

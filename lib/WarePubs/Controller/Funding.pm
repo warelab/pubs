@@ -28,6 +28,21 @@ sub index :Path :Args(0) {
 }
 
 # ----------------------------------------------------------------------
+=head2 create_form
+ 
+Show create form.
+ 
+=cut
+ 
+sub create_form :Local {
+    my ( $self, $c ) = @_;
+ 
+    $c->stash(
+        agencies => [ $c->model('DB')->resultset('Agency')->all ],
+        template => 'funding-create-form.tmpl'
+    );
+}
+# ----------------------------------------------------------------------
 =head2 list
  
 Fetch all fundings.
