@@ -5,36 +5,81 @@
 <head>
 <title>[% template.title OR "WareLab Pubs" %]</title>
 <link rel="stylesheet" href="[% c.uri_for('/static/css/main.css') %]" />
+<link rel="stylesheet" href="[% c.uri_for('/static/css/bootstrap.css') %]" />
+<script src="[% c.uri_for('/static/js/bootstrap.js') %]"></script>
+<style type="text/css">
+  body {
+    padding-top: 60px;
+    padding-bottom: 40px;
+  }
+  .sidebar-nav {
+    padding: 9px 0;
+  }
+
+  @media (max-width: 980px) {
+    /* Enable use of floated navbar text */
+    .navbar-text.pull-right {
+      float: none;
+      padding-left: 5px;
+      padding-right: 5px;
+    }
+  }
+</style>
 </head>
  
 <body>
-<div id="outer">
-<div id="header">
-    <h1>[% template.title or site.title %]</h1>
+
+<div class="navbar navbar-inverse navbar-fixed-top">
+  <div class="navbar-inner">
+    <div class="container-fluid">
+      <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="brand" href="#">[% template.title or site.title %]</a>
+      <div class="nav-collapse collapse">
+        <p class="navbar-text pull-right">
+          Logged in as <a href="#" class="navbar-link">Username</a>
+        </p>
+        <ul class="nav">
+          <li class="active"><a href="#">Home</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div><!--/.nav-collapse -->
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid">
+  <div class="row-fluid">
+    <div class="span3">
+      <div class="well sidebar-nav">
+        <ul class="nav nav-list">
+          <li class="nav-header">Sidebar</li>
+          <li><a href="[% c.uri_for('/') %]">Home</a></li>
+          <li><a href="[% c.uri_for('/pub/list') %]">Pubs</a></li>
+          <li><a href="[% c.uri_for('/agency/list') %]">Agencies</a></li>
+          <li><a href="[% c.uri_for('/funding/list') %]">Fundings</a></li>
+        </ul>
+      </div><!--/.well -->
+    </div><!--/span-->
+    <div class="span9">
+      <div class="container">
+      [%# Status and error messages %]
+      <span class="message">[% status_msg %]</span>
+      <span class="error">[% error_msg %]</span>
+      [%# This is where TT will stick all of your template's contents. -%]
+      [% content %]
+      </div>
+    </div>
+  </div>
 </div>
  
-<div id="bodyblock">
-<div id="menu">
-    Navigation:
-    <ul>
-        <li><a href="[% c.uri_for('/') %]">Home</a></li>
-        <li><a href="[% c.uri_for('/pub/list') %]">Pubs</a></li>
-        <li><a href="[% c.uri_for('/agency/list') %]">Agencies</a></li>
-        <li><a href="[% c.uri_for('/funding/list') %]">Fundings</a></li>
-    </ul>
-</div><!-- end menu -->
- 
-<div id="content">
-    [%# Status and error messages %]
-    <span class="message">[% status_msg %]</span>
-    <span class="error">[% error_msg %]</span>
-    [%# This is where TT will stick all of your template's contents. -%]
-    [% content %]
-</div><!-- end content -->
-</div><!-- end bodyblock -->
- 
-<div id="footer">Copyright (c) Ware Lab CSHL</div>
-</div><!-- end outer -->
- 
+<div class="footer">
+  <p>&copy; Ware Lab CSHL 2013</p>
+</div>
+
 </body>
 </html>

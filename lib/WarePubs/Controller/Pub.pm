@@ -61,6 +61,25 @@ sub create_form :Local {
 }
 
 # ----------------------------------------------------------------------
+=head2 edit
+ 
+Edit form for a pub.
+ 
+=cut
+ 
+sub edit :Local :Args(1) {
+    my ( $self, $c, $pub_id ) = @_;
+ 
+    my $pub = $c->model('DB')->resultset('Pub')->find($pub_id)
+              or die "Bad pub id '$pub_id'\n";
+
+    $c->stash(
+        pub      => $pub,
+        template => 'pub-edit.tmpl'
+    );
+}
+
+# ----------------------------------------------------------------------
 =head2 list
  
 Fetch all pubs.
@@ -69,6 +88,15 @@ Fetch all pubs.
  
 sub list :Local {
     my ($self, $c) = @_;
+    my $req        = $c->request;
+    my $order_by   = 'pub.' . $req->param('order_by') || 'title';
+    my $sort_order = $req->param('sort_order') || 'desc';
+
+#warn "order by = $order_by, sort_order = $sort_order\n";
+#warn "order_by   => { ", '-' . $sort_order, " => $order_by }\n";
+    my $pubs       = $c->model('DB')->resultset('Pub')->search({
+        order_by   => { '-' . $sort_order => $order_by }
+    });
  
     $c->stash(
         pubs     => [ $c->model('DB::Pub')->all ],

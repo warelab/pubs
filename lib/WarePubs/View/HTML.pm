@@ -18,6 +18,8 @@ __PACKAGE__->config(
 
     # This is your wrapper template located in the 'root/src'
     WRAPPER => 'wrapper.tmpl',
+
+    PLUGIN_BASE => 'WarePubs::View::Template::Plugin',
 );
 
 =head1 NAME

@@ -1,0 +1,14 @@
+[%
+
+MACRO colsort(order_col, this_col, cur_sort)
+
+BLOCK;
+    IF order_col==this_col AND cur_sort=='asc';
+        'desc';
+    ELSE;
+        'asc';
+    END;
+END;
+
+
+%]
