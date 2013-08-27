@@ -1,5 +1,7 @@
 package WarePubs::View::HTML;
+
 use Moose;
+use WarePubs;
 use namespace::autoclean;
 
 extends 'Catalyst::View::TT';

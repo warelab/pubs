@@ -55,6 +55,7 @@ sub list :Local {
     $c->stash(
         fundings => [ $c->model('DB::Funding')->all ],
         template => 'funding-list.tmpl',
+        current_view => 'JSON',
     );
 }
 
