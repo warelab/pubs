@@ -1,4 +1,4 @@
-name: WarePubs
+name: "Ware Labs Publications"
 
 default_view: HTML
 
@@ -9,3 +9,9 @@ Model::DB:
     dsn: 'dbi:mysql:warelab_pubs'
     user: 'kclark'
     password: 'g0p3rl!'
+
+search_fields:
+  pubs:
+    - title
+    - journal
+    - authors 

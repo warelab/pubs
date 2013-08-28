@@ -1,4 +1,5 @@
 package WarePubs::Controller::Pub;
+
 use Moose;
 use namespace::autoclean;
 
@@ -89,17 +90,26 @@ Fetch all pubs.
 sub list :Local {
     my ($self, $c) = @_;
     my $req        = $c->request;
-    my $order_by   = 'pub.' . $req->param('order_by') || 'title';
+    my $order_by   = $req->param('order_by')   || 'title';
     my $sort_order = $req->param('sort_order') || 'desc';
 
-#warn "order by = $order_by, sort_order = $sort_order\n";
-#warn "order_by   => { ", '-' . $sort_order, " => $order_by }\n";
-    my $pubs       = $c->model('DB')->resultset('Pub')->search({
-        order_by   => { '-' . $sort_order => $order_by }
-    });
+    my $search_params;
+    if ( my $filter = $req->param('filter') ) {
+        $search_params = [];
+        for my $fld ( 
+            @{ $c->config->{'search_fields'}{'pubs'} || [ 'title' ] }
+        ) {
+            push @$search_params, { $fld => { like => "%$filter%" } };
+        }
+    }
+
+    my $pubs_rs = $c->model('DB')->resultset('Pub')->search_rs(
+        $search_params,
+        { order_by => { '-' . $sort_order => $order_by } }
+    );
  
     $c->stash(
-        pubs     => [ $c->model('DB::Pub')->all ],
+        pubs     => $pubs_rs,
         template => 'pub-list.tmpl',
     );
 }

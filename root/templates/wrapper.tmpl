@@ -54,10 +54,10 @@
 
 <div class="container-fluid">
   <div class="row-fluid">
-    <div class="span3">
+    <div class="span2">
       <div class="well sidebar-nav">
         <ul class="nav nav-list">
-          <li class="nav-header">Sidebar</li>
+          <li class="nav-header">Actions</li>
           <li><a href="[% c.uri_for('/') %]">Home</a></li>
           <li><a href="[% c.uri_for('/pub/list') %]">Pubs</a></li>
           <li><a href="[% c.uri_for('/agency/list') %]">Agencies</a></li>
@@ -65,14 +65,10 @@
         </ul>
       </div><!--/.well -->
     </div><!--/span-->
-    <div class="span9">
-      <div class="container">
-      [%# Status and error messages %]
+    <div class="span10">
       <span class="message">[% status_msg %]</span>
       <span class="error">[% error_msg %]</span>
-      [%# This is where TT will stick all of your template's contents. -%]
       [% content %]
-      </div>
     </div>
   </div>
 </div>
