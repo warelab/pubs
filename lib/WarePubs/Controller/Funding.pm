@@ -1,4 +1,5 @@
 package WarePubs::Controller::Funding;
+
 use Moose;
 use namespace::autoclean;
 
@@ -51,11 +52,15 @@ Fetch all fundings.
  
 sub list :Local {
     my ($self, $c) = @_;
- 
+    my $fundings   = $c->model('DB')->resultset('Funding')->search(
+        undef,
+        { order_by => { '-asc' => 'title' } }
+    );
+
     $c->stash(
-        fundings => [ $c->model('DB::Funding')->all ],
+        fundings => $fundings,
         template => 'funding-list.tmpl',
-        current_view => 'JSON',
+        #current_view => 'JSON',
     );
 }
 

@@ -72,10 +72,22 @@ sub edit :Local :Args(1) {
     my ( $self, $c, $pub_id ) = @_;
  
     my $pub = $c->model('DB')->resultset('Pub')->find($pub_id)
-              or die "Bad pub id '$pub_id'\n";
+        or die "Bad pub id '$pub_id'\n";
+
+    my $agencies = $c->model('DB')->resultset('Agency')->search(
+        undef, 
+        { order_by => { '-asc' => 'agency_name' } }
+    );
+
+    my $fundings = $c->model('DB')->resultset('Funding')->search(
+        { agency_id => $pub->funding->agency_id }, 
+        { order_by => { '-asc' => 'title' } }
+    );
 
     $c->stash(
         pub      => $pub,
+        agencies => $agencies,
+        fundings => $fundings,
         template => 'pub-edit.tmpl'
     );
 }

@@ -1,19 +1,26 @@
-[% title = 'Agencies (' _ (agencies.size OR '0') _ ')' %]
+[% title = 'Agencies (' _ (agencies.count OR '0') _ ')' %]
 
 <h1>[% title %]</h1>
 
 <a href="[% c.uri_for('/agency/create_form') %]">Create Agency</a>
-<hr>
 
-<table>
-  <tr>
-    <th>Agency</th>
-    <th>URL Template</th>
-  </tr>
-  [% FOREACH agency IN agencies %]
+[% IF agencies.count > 0 %]
+  <table class="table table-striped table-bordered table-hover">
+    <thead>
     <tr>
-      <td><a href="[% c.uri_for('/agency/view', agency.agency_id ) %]">[% agency.agency_name %]</a></td>
-      <td>[% agency.url_template OR 'NA' %]</td>
+      <th>Agency</th>
+      <th>URL Template</th>
     </tr>
-  [% END %]
-</table>
+    </thead>
+    <tbody>
+    [% WHILE ( agency = agencies.next ) %]
+      <tr>
+        <td><a href="[% c.uri_for('/agency/view', agency.agency_id ) %]">[% agency.agency_name %]</a></td>
+        <td>[% agency.url_template OR 'NA' %]</td>
+      </tr>
+    [% END %]
+    </tbody>
+  </table>
+[% ELSE %]
+  No agencies.
+[% END %]

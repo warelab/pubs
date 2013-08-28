@@ -6,14 +6,22 @@
 -%]
 
 <h1>[% title %]</h1>
-<pre>[% #USE dumper; dumper.dump(pubs) %]</pre>
-<a href="[% c.uri_for('/pub/create_form') %]">Create Pub</a>
-<form id="filter-form" class="form-inline" role="form" action="[% c.uri_for('/pub/list') %]">
-  <div class="form-group">
-    <input type="text" class="form-control" name="filter" id="filter" value="[% c.request.param('filter') %]">
-    <button type="submit" class="btn btn-default">Filter</button>
-    <button type="submit" class="btn btn-default" onclick="document.getElementById('filter').value = '';document.getElementById('filter-form').submit();">Clear</button>
+
+<div class="row-fluid">
+  <div class="span4">
+    <a href="[% c.uri_for('/pub/create_form') %]">Create Pub</a>
   </div>
+  
+  <div class="span8 text-right">
+    <div class="form-group">
+      <form id="filter-form" class="form-inline" role="form" action="[% c.uri_for('/pub/list') %]">
+          <input type="text" class="form-control" name="filter" id="filter" value="[% c.request.param('filter') %]">
+          <button type="submit" class="btn btn-default">Filter</button>
+          <button type="submit" class="btn btn-default" onclick="document.getElementById('filter').value = '';document.getElementById('filter-form').submit();">Clear</button>
+      </form>
+    </div>
+  </div>
+</div>
 
 [% IF pubs.count > 0 %]
 <table class="table table-striped table-bordered table-hover">

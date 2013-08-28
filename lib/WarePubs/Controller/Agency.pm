@@ -3,7 +3,8 @@ package WarePubs::Controller::Agency;
 use Moose;
 use namespace::autoclean;
 
-BEGIN { extends 'Catalyst::Controller::REST'; }
+BEGIN { extends 'Catalyst::Controller'; }
+#BEGIN { extends 'Catalyst::Controller::REST'; }
 
 =head1 NAME
 
@@ -49,9 +50,13 @@ Fetch all agencies.
  
 sub list :Local {
     my ($self, $c) = @_;
- 
+    my $agencies   = $c->model('DB')->resultset('Agency')->search(
+        undef,
+        { order_by => { '-asc' => 'agency_name' } }
+    );
+
     $c->stash(
-        agencies => [ $c->model('DB')->resultset('Agency')->all ],
+        agencies => $agencies,
         template => 'agency-list.tmpl',
     );
 }

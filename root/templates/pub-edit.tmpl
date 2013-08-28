@@ -1,18 +1,37 @@
-[% title = 'View Pub &quot;' _ pub.title _ '&quot;' %]
+[% title = 'Edit Pub &quot;' _ pub.title _ '&quot;' %]
 
 <h1>[% title %]</h1>
-<a href="[% c.uri_for('/pub/list') %]">All pubs</a>
-<hr>
-
 <form method="post" action="[% c.uri_for('/pub/update') %]">
 <table border=0>
   <tr>
     <th align="right">Agency:</th>
-    <td><a href="[% c.uri_for('/agency/view', pub.funding.agency.id) %]">[% pub.funding.agency.agency_name %]</a></td>
+    <td>
+      <a href="[% c.uri_for('/agency/view', pub.funding.agency.id) %]">[% pub.funding.agency.agency_name %]</a>
+      [% IF agencies.count > 0 %]
+        <select name="agency_id">
+          [% WHILE ( agency = agencies.next ) %]
+          <option value="[% agency.id %]">[% agency.agency_name %]</option>
+          [% END %]
+        </input>
+      [% ELSE %]
+        No agencies.
+      [% END %]
+    </td>
   </tr>
   <tr>
     <th align="right">Funding:</th>
-    <td><a href="[% c.uri_for('/agency/view', pub.funding.id) %]">[% pub.funding.title OR 'unknown' %]</a></td>
+    <td>
+      <a href="[% c.uri_for('/agency/view', pub.funding.id) %]">[% pub.funding.title OR 'unknown' %]</a>
+      [% IF fundings.count > 0 %]
+        <select name="agency_id">
+          [% WHILE ( funding = fundings.next ) %]
+          <option value="[% funding.id %]">[% funding.title %][% IF funding.award_number %] ([% funding.award_number %])[% END %]</option>
+          [% END %]
+        </input>
+      [% ELSE %]
+        No funding.
+      [% END %]
+    </td>
   </tr>
   <tr>
     <th align="right">Title:</th>
