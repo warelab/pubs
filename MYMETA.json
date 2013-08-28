@@ -4,7 +4,7 @@
       "Ken Youens-Clark"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "ExtUtils::MakeMaker version 6.64, CPAN::Meta::Converter version 2.131490",
+   "generated_by" : "ExtUtils::MakeMaker version 6.6302, CPAN::Meta::Converter version 2.132140",
    "license" : [
       "perl_5"
    ],
@@ -40,11 +40,12 @@
             "Catalyst::Plugin::Static::Simple" : "0",
             "Catalyst::Restarter" : "0",
             "Catalyst::Runtime" : "5.90030",
+            "Catalyst::View::JSON" : "0",
             "Catalyst::View::TT" : "0",
             "Moose" : "0",
             "MooseX::MarkAsMethods" : "0",
             "Test::More" : "0.88",
-            "YAML" : "0",
+            "YAML::XS" : "0",
             "namespace::autoclean" : "0"
          }
       }

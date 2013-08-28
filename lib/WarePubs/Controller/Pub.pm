@@ -91,7 +91,7 @@ sub list :Local {
     my ($self, $c) = @_;
     my $req        = $c->request;
     my $order_by   = $req->param('order_by')   || 'title';
-    my $sort_order = $req->param('sort_order') || 'desc';
+    my $sort_order = $req->param('sort_order') || 'asc';
 
     my $search_params;
     if ( my $filter = $req->param('filter') ) {
