@@ -57,7 +57,7 @@ __PACKAGE__->config(
 
     'View::JSON' => {
         allow_callback  => 1,    
-        callback_param  => 'cb',
+        # callback_param  => 'cb',
         # expose_stash    => [ qw(foo bar) ], # defaults to everything
     },
 );
