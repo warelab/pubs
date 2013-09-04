@@ -1,9 +1,23 @@
 [%-
-  title      = 'Publications (' _ (pubs.count OR '0') _ ')';
+  title      = 'Publications';
   order_by   = c.request.param('order_by')   OR 'title';
   sort_order = c.request.param('sort_order') OR 'desc';
   PROCESS 'macros.tmpl';
 -%]
+
+<script>
+  $(document).ready(function() {
+    $('#filter-form').submit( function(event) {
+//      var url = "[% c.uri_for('/pub/list_service', { format => 'html' } ) %]&amp;filter=" +  $('#filter').val();
+
+      alert($('#filter').val());
+
+//      $.get( url, function(html) { $('#pubs').html(html) });
+//    );
+
+ //   $('#filter').keyup(function(event) { $('#filter-form').submit() });
+  });
+</script>
 
 <h1>[% title %]</h1>
 
@@ -14,7 +28,7 @@
   
   <div class="span8 text-right">
     <div class="form-group">
-      <form id="filter-form" class="form-inline" role="form" action="[% c.uri_for('/pub/list') %]">
+      <form id="filter-form" class="form-inline" role="form"> <!-- action="[% c.uri_for('/pub/list') %]"-->
           <input type="text" class="form-control" name="filter" id="filter" value="[% c.request.param('filter') %]">
           <button type="submit" class="btn btn-default">Filter</button>
           <button type="submit" class="btn btn-default" onclick="document.getElementById('filter').value = '';document.getElementById('filter-form').submit();">Clear</button>
@@ -23,36 +37,9 @@
   </div>
 </div>
 
-[% IF pubs.count > 0 %]
-<table class="table table-striped table-bordered table-hover">
-  <thead>
-  <tr>
-    <th width="300"><a href="[% c.uri_for('/pub/list', { order_by = 'title', sort_order = colsort(c.req.param('order_by'), 'title', c.request.param('sort_order')) } ) %]">Title</a></th>
-    <th><a href="[% c.uri_for('/pub/list', { order_by = 'agency_name' }) %]">Agency</a></th>
-    <th>Funding</th>
-    <th><a href="[% c.uri_for('/pub/list', { order_by = 'year', sort_order = colsort(c.req.param('order_by'), 'year', c.request.param('sort_order')) } ) %]">Year</a></th>
-    <th>Journal</th>
-    <th>Authors</th>
-    <th>115 Info</th>
-  </tr>
-  </thead>
-  <tbody>
-  [% WHILE ( pub = pubs.next ) %]
-    <tr>
-      <td><a href="[% c.uri_for('/pub/edit', pub.id) %]">[% pub.title | truncate(40) %]</a></td>
-      <td><a href="[% c.uri_for('/agency/view', pub.funding.agency.id) %]">[% pub.funding.agency.agency_name %]</a></td>
-      <td><a href="[% c.uri_for('/funding/view', pub.funding.id) %]">[% pub.funding.title %]</a></td>
-      <td>[% pub.year %]</td>
-      <td>[% pub.journal %]</td>
-      <td>[% pub.authors | truncate(40) %]</td>
-      <td>[% pub.info_115 %]</td>
-    </tr>
-  [% END %]
-  </tbody>
-</table>
-[% ELSE %]
-  <hr>
-  <div align="center">
-    No pubs found.
+<div id="pubs">
+  <div style="text-align:center" class="well">
+  Retrieving pubs...<br/>
+  <img src="/static/images/loading.gif">
   </div>
-[% END %]
+</div>

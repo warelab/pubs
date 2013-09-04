@@ -93,15 +93,16 @@ sub edit :Local :Args(1) {
 }
 
 # ----------------------------------------------------------------------
-=head2 list
+=head2 list_service
  
 Fetch all pubs.
  
 =cut
  
-sub list :Local {
+sub list_service :Local {
     my ($self, $c) = @_;
     my $req        = $c->request;
+    my $format     = $req->param('format')     || 'json';
     my $order_by   = $req->param('order_by')   || 'title';
     my $sort_order = $req->param('sort_order') || 'asc';
 
@@ -119,11 +120,40 @@ sub list :Local {
         $search_params,
         { order_by => { '-' . $sort_order => $order_by } }
     );
+
+    if ( lc $format eq 'html' ) {
+        $c->stash( 
+            pubs       => $pubs_rs,
+            template   => 'pub-list-service.tmpl',
+            no_wrapper => 1,
+        );
+    }
+    else {
+        my @pubs;
+        while ( my $pub = $pubs_rs->next ) {
+            push @pubs, { 
+                pub     => { $pub->get_inflated_columns },
+                funding => { $pub->funding->get_inflated_columns },
+                agency  => { $pub->funding->agency->get_inflated_columns },
+            };
+        }
+     
+        $c->stash( pubs => \@pubs );
+        $c->forward('View::JSON');
+    }
+}
+
+# ----------------------------------------------------------------------
+=head2 list
  
-    $c->stash(
-        pubs     => $pubs_rs,
-        template => 'pub-list.tmpl',
-    );
+Look at all pubs.
+ 
+=cut
+ 
+sub list :Local {
+    my ($self, $c) = @_;
+
+    $c->stash( template => 'pub-list.tmpl' );
 }
 
 # ----------------------------------------------------------------------

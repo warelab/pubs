@@ -1,0 +1,33 @@
+[% IF pubs.count > 0 %]
+<table class="table table-striped table-bordered table-hover">
+  <thead>
+  <tr>
+    <th width="300"><a href="[% c.uri_for('/pub/list', { order_by = 'title', sort_order = colsort(c.req.param('order_by'), 'title', c.request.param('sort_order')) } ) %]">Title</a></th>
+    <th><a href="[% c.uri_for('/pub/list', { order_by = 'agency_name' }) %]">Agency</a></th>
+    <th>Funding</th>
+    <th><a href="[% c.uri_for('/pub/list', { order_by = 'year', sort_order = colsort(c.req.param('order_by'), 'year', c.request.param('sort_order')) } ) %]">Year</a></th>
+    <th>Journal</th>
+    <th>Authors</th>
+    <th>115 Info</th>
+  </tr>
+  </thead>
+  <tbody>
+  [% WHILE ( pub = pubs.next ) %]
+    <tr>
+      <td><a href="[% c.uri_for('/pub/edit', pub.id) %]">[% pub.title | truncate(40) %]</a></td>
+      <td><a href="[% c.uri_for('/agency/view', pub.funding.agency.id) %]">[% pub.funding.agency.agency_name %]</a></td>
+      <td><a href="[% c.uri_for('/funding/view', pub.funding.id) %]">[% pub.funding.title %]</a></td>
+      <td>[% pub.year %]</td>
+      <td>[% pub.journal %]</td>
+      <td>[% pub.authors | truncate(40) %]</td>
+      <td>[% pub.info_115 %]</td>
+    </tr>
+  [% END %]
+  </tbody>
+</table>
+[% ELSE %]
+  <hr>
+  <div style="text-align:center" class="well">
+    No pubs found.
+  </div>
+[% END %]
