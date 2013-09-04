@@ -9,6 +9,7 @@ Model::DB:
     dsn: 'dbi:mysql:warelab_pubs'
     user: 'kclark'
     password: 'g0p3rl!'
+    host: 'localhost'
 
 search_fields:
   pubs:
