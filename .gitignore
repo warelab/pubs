@@ -13,3 +13,4 @@ MANIFEST.bak
 *META.*
 nytprof.out
 pm_to_blib
+*.swp

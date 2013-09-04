@@ -63,9 +63,16 @@
         <ul class="nav nav-list">
           <li class="nav-header">Actions</li>
           <li><a href="[% c.uri_for('/') %]">Home</a></li>
-          <li><a href="[% c.uri_for('/pub/list') %]">Pubs</a></li>
-          <li><a href="[% c.uri_for('/agency/list') %]">Agencies</a></li>
-          <li><a href="[% c.uri_for('/funding/list') %]">Fundings</a></li>
+          [% IF c.req.path.match('^pub/') %] 
+            <li class="active"><a href="[% c.uri_for('/pub/list') %]">Pubs</a></li>
+            <ul>
+              <li><a href="[% c.uri_for('/pub/create_form') %]">Create</a></li>
+            </ul>
+          [% ELSE %]
+            <li><a href="[% c.uri_for('/pub/list') %]">Pubs</a></li>
+          [% END %]
+          <li[% IF c.req.path.match('^agency/') %] class="active"[% END %]><a href="[% c.uri_for('/agency/list') %]">Agencies</a></li>
+          <li[% IF c.req.path.match('^funding/') %] class="active"[% END %]><a href="[% c.uri_for('/funding/list') %]">Fundings</a></li>
         </ul>
       </div><!--/.well -->
     </div><!--/span-->

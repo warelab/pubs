@@ -7,30 +7,29 @@
 
 <script>
   $(document).ready(function() {
-    $('#filter-form').submit( function(event) {
-//      var url = "[% c.uri_for('/pub/list_service', { format => 'html' } ) %]&amp;filter=" +  $('#filter').val();
+    $('#filter-form').submit(function(e) {
+        e.preventDefault();
+        var url = "[% c.uri_for('/pub/list_service', { format => 'html' } ) %]&amp;filter=" +  $('#filter').val();
+        $.get(url, function(html) {
+            $('#pubs').html(html);
+        });
+    });
 
-      alert($('#filter').val());
-
-//      $.get( url, function(html) { $('#pubs').html(html) });
-//    );
-
- //   $('#filter').keyup(function(event) { $('#filter-form').submit() });
+    $('#filter').keyup(function(event) { $('#filter-form').submit() });
+    $('#filter').focus();
+    $('#filter-form').submit();
   });
 </script>
 
-<h1>[% title %]</h1>
 
 <div class="row-fluid">
-  <div class="span4">
-    <a href="[% c.uri_for('/pub/create_form') %]">Create Pub</a>
+  <div id="title" class="span4">
+    <h1>[% title %]</h1>
   </div>
-  
-  <div class="span8 text-right">
+  <div class="text-right">
     <div class="form-group">
-      <form id="filter-form" class="form-inline" role="form"> <!-- action="[% c.uri_for('/pub/list') %]"-->
+      <form id="filter-form" class="form-inline" role="form">
           <input type="text" class="form-control" name="filter" id="filter" value="[% c.request.param('filter') %]">
-          <button type="submit" class="btn btn-default">Filter</button>
           <button type="submit" class="btn btn-default" onclick="document.getElementById('filter').value = '';document.getElementById('filter-form').submit();">Clear</button>
       </form>
     </div>
