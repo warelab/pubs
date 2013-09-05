@@ -4,7 +4,6 @@ use Moose;
 use namespace::autoclean;
 
 BEGIN { extends 'Catalyst::Controller'; }
-#BEGIN { extends 'Catalyst::Controller::REST'; }
 
 =head1 NAME
 
@@ -18,6 +17,80 @@ Catalyst Controller.
 
 =cut
 
+# ----------------------------------------------------------------------
+=head2 create
+ 
+Create an agency.
+ 
+=cut
+ 
+sub create :Local {
+    my ($self, $c) = @_;
+
+    my $req    = $c->req;
+    my $name   = $req->param('agency_name') or die 'No agency name';
+    my $url    = $req->param('url_template') || '';
+    my ($Agency) = $c->model('DB')->resultset('Agency')->find_or_create({
+        agency_name  => $name,
+        url_template => $url,
+    });
+
+    $c->res->redirect('/agency/view/' . $Agency->id);
+}
+
+# ----------------------------------------------------------------------
+=head2 create_form
+ 
+Show create form.
+ 
+=cut
+ 
+sub create_form :Local {
+    my ($self, $c) = @_;
+
+    $c->stash( template => 'agency-create-form.tmpl' );
+}
+
+# ----------------------------------------------------------------------
+=head2 update
+ 
+Updates an agency.
+ 
+=cut
+ 
+sub update :Local {
+    my ($self, $c) = @_;
+
+    my $req    = $c->req;
+    my $id     = $req->param('agency_id')   or die 'No agency id';
+    my $name   = $req->param('agency_name') or die 'No agency name';
+    my $url    = $req->param('url_template') || '';
+
+    my ($Agency) = $c->model('DB')->resultset('Agency')->find($id)
+        or die "Can't find agency id '$id'";
+
+    $Agency->agency_name( $name );
+    $Agency->url_template( $url );
+    $Agency->update;
+
+    $c->res->redirect('/agency/view/' . $id);
+}
+
+# ----------------------------------------------------------------------
+=head2 edit_form
+ 
+Detail for a single agency.
+ 
+=cut
+ 
+sub edit_form :Local {
+    my ( $self, $c, $agency_id ) = @_;
+ 
+    $c->stash(
+        agency   => $c->model('DB')->resultset('Agency')->find($agency_id),
+        template => 'agency-edit-form.tmpl',
+    );
+}
 # ----------------------------------------------------------------------
 =head2 info
 
@@ -50,15 +123,55 @@ Fetch all agencies.
  
 sub list :Local {
     my ($self, $c) = @_;
-    my $agencies   = $c->model('DB')->resultset('Agency')->search(
-        undef,
-        { order_by => { '-asc' => 'agency_name' } }
+
+    $c->stash( template => 'agency-list.tmpl' );
+}
+
+# ----------------------------------------------------------------------
+=head2 list_service
+ 
+Fetch all agencies.
+ 
+=cut
+ 
+sub list_service :Local {
+    my ($self, $c) = @_;
+    my $req        = $c->request;
+    my $format     = $req->param('format')     || 'json';
+    my $order_by   = $req->param('order_by')   || 'agency_name';
+    my $sort_order = $req->param('sort_order') || 'asc';
+
+    my $search_params;
+    if ( my $filter = $req->param('filter') ) {
+        $search_params = [];
+        for my $fld ( 
+            @{ $c->config->{'search_fields'}{'agencies'} || [ 'agency_name' ] }
+        ) {
+            push @$search_params, { $fld => { like => "%$filter%" } };
+        }
+    }
+
+    my $agencies_rs = $c->model('DB')->resultset('Agency')->search_rs(
+        $search_params,
+        { order_by => { '-' . $sort_order => $order_by } }
     );
 
-    $c->stash(
-        agencies => $agencies,
-        template => 'agency-list.tmpl',
-    );
+    if ( lc $format eq 'html' ) {
+        $c->stash( 
+            agencies   => $agencies_rs,
+            template   => 'agency-list-service.tmpl',
+            no_wrapper => 1,
+        );
+    }
+    else {
+        my @agencies;
+        while ( my $agency = $agencies_rs->next ) {
+            push @agencies, { $agency->get_inflated_columns };
+        }
+     
+        $c->stash( agencies => \@agencies );
+        $c->forward('View::JSON');
+    }
 }
 
 # ----------------------------------------------------------------------

@@ -6,7 +6,7 @@
     %]"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-<title>[% template.title OR "WareLab Pubs" %]</title>
+<title>[% title OR "WareLab Pubs" %]</title>
 <link rel="stylesheet" href="[% c.uri_for('/static/css/main.css') %]" />
 <link rel="stylesheet" href="[% c.uri_for('/static/css/bootstrap.css') %]" />
 <script src="[% c.uri_for('/static/js/bootstrap.js') %]"></script>
@@ -71,8 +71,24 @@
           [% ELSE %]
             <li><a href="[% c.uri_for('/pub/list') %]">Pubs</a></li>
           [% END %]
-          <li[% IF c.req.path.match('^agency/') %] class="active"[% END %]><a href="[% c.uri_for('/agency/list') %]">Agencies</a></li>
-          <li[% IF c.req.path.match('^funding/') %] class="active"[% END %]><a href="[% c.uri_for('/funding/list') %]">Fundings</a></li>
+
+          [% IF c.req.path.match('^agency/') %] 
+            <li class="active"><a href="[% c.uri_for('/agency/list') %]">Agencies</a></li>
+            <ul>
+              <li><a href="[% c.uri_for('/agency/create_form') %]">Create</a></li>
+            </ul>
+          [% ELSE %]
+            <li><a href="[% c.uri_for('/agency/list') %]">Agencies</a></li>
+          [% END %]
+
+          [% IF c.req.path.match('^funding/') %] 
+            <li class="active"><a href="[% c.uri_for('/funding/list') %]">Funds</a></li>
+            <ul>
+              <li><a href="[% c.uri_for('/funding/create_form') %]">Create</a></li>
+            </ul>
+          [% ELSE %]
+            <li><a href="[% c.uri_for('/funding/list') %]">Funds</a></li>
+          [% END %]
         </ul>
       </div><!--/.well -->
     </div><!--/span-->

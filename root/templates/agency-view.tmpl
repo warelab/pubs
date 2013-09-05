@@ -1,7 +1,8 @@
 [% title = 'View Agency &quot;' _ (agency.agency_name OR 'unknown') _ '&quot;' %]
 
 <h1>[% title %]</h1>
-<table border=0>
+<a href="[% c.uri_for('/agency/edit_form', agency.id ) %]">Edit</a>
+<table class="table table-bordered">
   <tr>
     <th align="right">Agency Name:</th>
     <td>[% agency.agency_name %]</td>
@@ -12,6 +13,7 @@
   </tr>
 </table>
 
+<h2>Funds ([% fundings.size OR '0' %])</h2>
 [% IF agency.fundings.size > 0 %]
   [% PROCESS 'fundings.tmpl' fundings=agency.fundings %]
 [% ELSE %]

@@ -1,26 +1,27 @@
-[% title = 'Agencies (' _ (agencies.count OR '0') _ ')' %]
+[% title = 'Agencies' %]
 
-<h1>[% title %]</h1>
+<script>
+  $(document).ready(function() {
+    $('#filter-form').submit(function(e) {
+        e.preventDefault();
+        var url = "[% c.uri_for('/agency/list_service', { format => 'html' } ) %]&amp;filter=" +  $('#filter').val();
+        $.get(url, function(html) {
+            $('#agencies').html(html);
+        });
+    });
 
-<a href="[% c.uri_for('/agency/create_form') %]">Create Agency</a>
+    $('#filter').keyup(function(event) { $('#filter-form').submit() });
+    $('#filter').focus();
+    $('#filter-form').submit();
+  });
+</script>
 
-[% IF agencies.count > 0 %]
-  <table class="table table-striped table-bordered table-hover">
-    <thead>
-    <tr>
-      <th>Agency</th>
-      <th>URL Template</th>
-    </tr>
-    </thead>
-    <tbody>
-    [% WHILE ( agency = agencies.next ) %]
-      <tr>
-        <td><a href="[% c.uri_for('/agency/view', agency.agency_id ) %]">[% agency.agency_name %]</a></td>
-        <td>[% agency.url_template OR 'NA' %]</td>
-      </tr>
-    [% END %]
-    </tbody>
-  </table>
-[% ELSE %]
-  No agencies.
-[% END %]
+[% PROCESS 'filter-form.tmpl' %]
+
+<div id="agencies">
+  <div style="text-align:center" class="well">
+  Retrieving agencies...<br/>
+  <img src="/static/images/loading.gif">
+  </div>
+</div>
+

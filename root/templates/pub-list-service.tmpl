@@ -17,7 +17,7 @@
   <tbody>
   [% WHILE ( pub = pubs.next ) %]
     <tr>
-      <td><a href="[% c.uri_for('/pub/edit', pub.id) %]">[% pub.title | truncate(40) %]</a></td>
+      <td><a href="[% c.uri_for('/pub/edit_form', pub.id) %]">[% pub.title | truncate(40) %]</a></td>
       <td><a href="[% c.uri_for('/agency/view', pub.funding.agency.id) %]">[% pub.funding.agency.agency_name %]</a></td>
       <td><a href="[% c.uri_for('/funding/view', pub.funding.id) %]">[% pub.funding.title %]</a></td>
       <td>[% pub.year %]</td>

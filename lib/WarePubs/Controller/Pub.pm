@@ -62,13 +62,13 @@ sub create_form :Local {
 }
 
 # ----------------------------------------------------------------------
-=head2 edit
+=head2 edit_form
  
 Edit form for a pub.
  
 =cut
  
-sub edit :Local :Args(1) {
+sub edit_form :Local :Args(1) {
     my ( $self, $c, $pub_id ) = @_;
  
     my $pub = $c->model('DB')->resultset('Pub')->find($pub_id)
@@ -88,7 +88,7 @@ sub edit :Local :Args(1) {
         pub      => $pub,
         agencies => $agencies,
         fundings => $fundings,
-        template => 'pub-edit.tmpl'
+        template => 'pub-edit-form.tmpl'
     );
 }
 
@@ -166,18 +166,26 @@ Update the pub.
 sub update :Local {
     my ( $self, $c ) = @_;
 
-    my $pub_id  = $c->request->params->{'pub_id'}  or die 'No pub_id';
-    my $title   = $c->request->params->{'title'}   or die 'No title';
-    my $journal = $c->request->params->{'journal'} or die 'No journal';
+    my $req     = $c->req;
+    my $pub_id  = $req->params->{'pub_id'}  or die 'No pub_id';
+    my $title   = $req->params->{'title'}   or die 'No title';
+    my $journal = $req->params->{'journal'} or die 'No journal';
     my $pub     = $c->model('DB')->resultset('Pub')->find($pub_id)
                   or die "Can't find pub '$pub_id'\n";
  
-    $pub->update(
-        title   => $title,
-        journal => $journal,
-    );
+    $pub->update({
+        title      => $title,
+        journal    => $journal,
+        funding_id => $req->param('funding_id') || 1,
+        year       => $req->param('year')       || '',
+        authors    => $req->param('authors')    || '',
+        pubmed     => $req->param('pubmed')     || '',
+        url        => $req->param('url')        || '',
+        data       => $req->param('data')       || '',
+        cover      => $req->param('cover')      || '',
+    });
 
-    $c->forward( $c->uri_for('/pub/view', $pub->id ) );
+    $c->res->redirect( $c->uri_for('/pub/view', $pub->id ) );
 }
 
 # ----------------------------------------------------------------------
