@@ -110,7 +110,7 @@ sub list_service :Local {
     if ( my $filter = $req->param('filter') ) {
         $search_params = [];
         for my $fld ( 
-            @{ $c->config->{'search_fields'}{'pubs'} || [ 'title' ] }
+            @{ $c->config->{'search_fields'}{'pub'} || [ 'title' ] }
         ) {
             push @$search_params, { $fld => { like => "%$filter%" } };
         }
@@ -131,6 +131,35 @@ sub list_service :Local {
             template   => 'pub-list-service.tmpl',
             no_wrapper => 1,
         );
+    }
+    elsif ( lc $format eq 'csv' ) {
+        my ( %cols, @header );
+
+        for my $tbl ( qw[ pub funding agency ] ) {
+            my @cols = @{ $c->config->{'download_fields'}{ $tbl } || [] };
+            push @header, map { "$tbl.$_" } @cols;
+            $cols{ $tbl } = [ @cols ];
+        }
+
+        my @pubs = ( [ @header ] );
+
+        while ( my $pub = $pubs_rs->next ) {
+            my %pub    = $pub->get_columns;
+            my %fund   = $pub->funding->get_columns;
+            my %agency = $pub->funding->agency->get_columns;
+
+            push @pubs, [
+                ( map { $pub->get_column($_) } @{ $cols{'pub'} } ),
+                ( map { $pub->funding->get_column($_) } @{ $cols{'fund'} }),
+                (
+                    map { $pub->funding->agency->get_column($_) }
+                      @{ $cols{'agency'} }
+                ),
+            ];
+        }
+     
+        $c->stash( csv => \@pubs );
+        $c->forward('View::CSV');
     }
     else {
         my @pubs;

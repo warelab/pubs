@@ -12,7 +12,7 @@ Model::DB:
     password: "g0p3rl!"
 
 search_fields:
-  pubs:
+  pub:
     - title
     - journal
     - authors 
@@ -20,5 +20,18 @@ search_fields:
     - award_number
     - title
     - abstract
+  agency:
+    - agency_name
+
+download_fields:
+  pub:
+    - year
+    - journal
+    - title
+    - authors
+    - pubmed
+  funding:
+    - award_number
+    - title
   agency:
     - agency_name

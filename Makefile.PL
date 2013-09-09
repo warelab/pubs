@@ -18,6 +18,7 @@ requires 'Catalyst::Plugin::ConfigLoader';
 requires 'Catalyst::Plugin::Static::Simple';
 requires 'Catalyst::Restarter';
 requires 'Catalyst::View::TT';
+requires 'Catalyst::View::Download::CSV';
 requires 'Moose';
 requires 'MooseX::MarkAsMethods';
 requires 'namespace::autoclean';
