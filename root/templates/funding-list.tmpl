@@ -1,24 +1,24 @@
-<h1>Fundings ([% fundings.count OR '0' %])</h1>
+<script>
+  $(document).ready(function() {
+    $('#filter-form').submit(function(e) {
+        e.preventDefault();
+        var url = "[% c.uri_for('/funding/list_service', { format => 'html' } ) %]&filter=" +  $('#filter').val() + '&agency_id=' + $('#agency_id').val();
+        $.get(url, function(html) {
+            $('#fundings').html(html);
+        });
+    });
 
-<a href="[% c.uri_for('/funding/create_form') %]">Create Funding</a>
+    $('#filter').keyup( function(event) { $('#filter-form').submit() });
+    $('#filter').focus();
+    $('#filter-form').submit();
+  });
+</script>
 
-[% IF fundings.count > 0 %]
-  <table class="table table-striped table-bordered table-hover">
-    <tr>
-      <th>Agency</th>
-      <th>Award Title</th>
-      <th>Award Number</th>
-      <th>Abstract</th>
-    </tr>
-    [% WHILE ( funding = fundings.next ) %]
-      <tr>
-        <td><a href="[% c.uri_for('/agency/view', funding.agency_id) %]">[% funding.agency.agency_name %]</a></td>
-        <td><a href="[% c.uri_for('/funding/view', funding.funding_id) %]">[% funding.title OR 'NA' %]</a></td>
-        <td>[% funding.award_number OR 'NA' %]</td>
-        <td>[% funding.abstract OR 'NA' %]</td>
-      </tr>
-    [% END %]
-  </table>
-[% ELSE %]
-  No funding.
-[% END %]
+[% PROCESS 'filter-form.tmpl' %]
+
+<div id="fundings">
+  <div style="text-align:center" class="well">
+  Retrieving funds...<br/>
+  <img src="/static/images/loading.gif">
+  </div>
+</div>

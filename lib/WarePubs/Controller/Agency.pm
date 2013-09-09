@@ -183,9 +183,13 @@ Detail for a single agency.
  
 sub view :Local {
     my ( $self, $c, $agency_id ) = @_;
- 
+    my ($Agency) = $c->model('DB')->resultset('Agency')->find($agency_id)
+        or die "Can't find agency id '$agency_id'";
+
+#warn "fundings = ", ref $Agency->fundings;
+
     $c->stash(
-        agency   => $c->model('DB')->resultset('Agency')->find($agency_id),
+        agency   => $Agency,
         template => 'agency-view.tmpl',
     );
 }

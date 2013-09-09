@@ -116,6 +116,10 @@ sub list_service :Local {
         }
     }
 
+    if ( my $funding_id = $req->param('funding_id') ) {
+        push @$search_params, { funding_id => $funding_id };
+    }
+
     my $pubs_rs = $c->model('DB')->resultset('Pub')->search_rs(
         $search_params,
         { order_by => { '-' . $sort_order => $order_by } }
@@ -183,9 +187,10 @@ sub update :Local {
         url        => $req->param('url')        || '',
         data       => $req->param('data')       || '',
         cover      => $req->param('cover')      || '',
+        pdf        => $req->param('pdf')        || '',
     });
 
-    $c->res->redirect( $c->uri_for('/pub/view', $pub->id ) );
+    $c->res->redirect( $c->uri_for('/pub/list') );
 }
 
 # ----------------------------------------------------------------------
@@ -198,11 +203,11 @@ Detail for a single pub.
 sub view :Local {
     my ( $self, $c, $pub_id ) = @_;
  
-    my $pub = $c->model('DB')->resultset('Pub')->find($pub_id)
+    my $Pub = $c->model('DB')->resultset('Pub')->find($pub_id)
               or die "Bad pub id '$pub_id'\n";
 
     $c->stash(
-        pub      => $pub,
+        pub      => $Pub,
         template => 'pub-view.tmpl'
     );
 }

@@ -118,6 +118,11 @@ __PACKAGE__->table("pub");
   is_nullable: 0
   size: 255
 
+=head2 one15
+
+  data_type: 'blob'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -150,6 +155,8 @@ __PACKAGE__->add_columns(
   { data_type => "char", default_value => "", is_nullable => 0, size => 255 },
   "info_115",
   { data_type => "char", default_value => "", is_nullable => 0, size => 255 },
+  "one15",
+  { data_type => "blob", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -182,8 +189,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2013-05-31 15:02:04
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:BtVbNMOJkDxmr9Eo6D74Sg
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2013-09-05 15:31:08
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:SbZ7pCDIJtvKx/F+Z5UT2A
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

@@ -21,6 +21,7 @@ requires 'Catalyst::View::TT';
 requires 'Moose';
 requires 'MooseX::MarkAsMethods';
 requires 'namespace::autoclean';
+requires 'String::Trim';
 requires 'YAML::XS';
 
 test_requires 'Test::More' => '0.88';

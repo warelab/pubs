@@ -1,5 +1,15 @@
 [% title = 'View Agency &quot;' _ (agency.agency_name OR 'unknown') _ '&quot;' %]
 
+<script>
+  $(document).ready(function() {
+    var url = "[% c.uri_for('/funding/list_service', { format => 'html', agency_id => agency.id } ) %]";
+    $.get(url, function(html) {
+        $('#fundings').html(html);
+    });
+  });
+</script>
+
+
 <h1>[% title %]</h1>
 <a href="[% c.uri_for('/agency/edit_form', agency.id ) %]">Edit</a>
 <table class="table table-bordered">
@@ -13,9 +23,9 @@
   </tr>
 </table>
 
-<h2>Funds ([% fundings.size OR '0' %])</h2>
-[% IF agency.fundings.size > 0 %]
-  [% PROCESS 'fundings.tmpl' fundings=agency.fundings %]
-[% ELSE %]
-  No fundings.
-[% END %]
+<div id="fundings">
+  <div style="text-align:center" class="well">
+  Retrieving funds...<br/>
+  <img src="/static/images/loading.gif">
+  </div>
+</div>

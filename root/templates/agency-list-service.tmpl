@@ -8,13 +8,15 @@
     <tr>
       <th>Agency</th>
       <th>URL Template</th>
+      <th>Funds</th>
     </tr>
     </thead>
     <tbody>
     [% WHILE ( agency = agencies.next ) %]
       <tr>
-        <td><a href="[% c.uri_for('/agency/edit_form', agency.agency_id ) %]">[% agency.agency_name %]</a></td>
+        <td><a href="[% c.uri_for('/agency/view', agency.agency_id ) %]">[% agency.agency_name %]</a></td>
         <td>[% agency.url_template OR 'NA' %]</td>
+        <td>[% agency.fundings.all OR '0' %]</td>
       </tr>
     [% END %]
     </tbody>

@@ -2,11 +2,11 @@
   <div id="title" class="span4">
     <h1>[% title %]</h1>
   </div>
-  <div class="text-right">
+  <div class="span8 text-right">
     <div class="form-group">
-      <form id="filter-form" class="form-inline" role="form">
-          <input type="text" class="form-control" name="filter" id="filter" value="[% c.request.param('filter') %]">
-          <button type="submit" class="btn btn-default" onclick="document.getElementById('filter').value = '';document.getElementById('filter-form').submit();">Clear</button>
+      <form id="filter-form" class="form-search" role="form">
+          <input type="text" class="search-query" name="filter" id="filter" value="[% c.request.param('filter') %]">
+          <button type="submit" class="btn btn-default" onclick="document.getElementById('filter').value = ''">Clear</button>
       </form>
     </div>
   </div>

@@ -16,3 +16,9 @@ search_fields:
     - title
     - journal
     - authors 
+  funding:
+    - award_number
+    - title
+    - abstract
+  agency:
+    - agency_name
