@@ -1,6 +1,6 @@
 [% IF pubs.count > 0 %]
 <div style="text-align:center" class="well">
-  Found [% pubs.count %] pubs.
+  Found [% pubs.count %] pubs. (<a href="[% c.uri_for('/pub/list_service' { filter => c.req.param('filter'), format => 'csv' } ) %]">Download</a>)
 </div>
 <table class="table table-striped table-bordered table-hover">
   <thead>
