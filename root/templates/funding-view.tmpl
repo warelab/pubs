@@ -10,6 +10,9 @@
 </script>
 
 <h1>[% title %]</h1>
+
+<a class="btn" href="[% c.uri_for('/funding/edit_form', funding.id) %]">Edit</a>
+
 <table class="table table-bordered">
   <tr>
     <th align="right">Agency Name:</th>
@@ -29,4 +32,9 @@
   </tr>
 </table>
 
-<div id="pubs"></div>
+<div id="pubs">
+  <div style="text-align:center" class="well">
+  Retrieving pubs...<br/>
+  <img src="/static/images/loading.gif">
+  </div>
+</div>

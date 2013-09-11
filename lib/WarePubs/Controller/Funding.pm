@@ -165,6 +165,7 @@ sub list_service :Local {
 
     if ( lc $format eq 'html' ) {
         $c->stash(
+            agency_id  => $agency_id,
             agencies   => [ $c->model('DB')->resultset('Agency')->all ],
             fundings   => $fundings,
             template   => 'funding-list-service.tmpl',

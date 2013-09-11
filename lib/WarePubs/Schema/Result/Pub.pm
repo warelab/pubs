@@ -83,19 +83,17 @@ __PACKAGE__->table("pub");
   is_nullable: 0
   size: 255
 
-=head2 data
+=head2 data_path
 
   data_type: 'char'
   default_value: (empty string)
   is_nullable: 0
   size: 255
 
-=head2 info_115
+=head2 comments
 
-  data_type: 'char'
-  default_value: (empty string)
+  data_type: 'text'
   is_nullable: 0
-  size: 255
 
 =head2 hide_from_view
 
@@ -117,9 +115,10 @@ __PACKAGE__->table("pub");
   is_nullable: 0
   size: 255
 
-=head2 one15
+=head2 doc_115
 
   data_type: 'char'
+  default_value: (empty string)
   is_nullable: 0
   size: 255
 
@@ -140,18 +139,18 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 0 },
   "url",
   { data_type => "char", default_value => "", is_nullable => 0, size => 255 },
-  "data",
+  "data_path",
   { data_type => "char", default_value => "", is_nullable => 0, size => 255 },
-  "info_115",
-  { data_type => "char", default_value => "", is_nullable => 0, size => 255 },
+  "comments",
+  { data_type => "text", is_nullable => 0 },
   "hide_from_view",
   { data_type => "tinyint", default_value => 0, is_nullable => 0 },
   "cover",
   { data_type => "char", default_value => "", is_nullable => 0, size => 255 },
   "pdf",
   { data_type => "char", default_value => "", is_nullable => 0, size => 255 },
-  "one15",
-  { data_type => "char", is_nullable => 0, size => 255 },
+  "doc_115",
+  { data_type => "char", default_value => "", is_nullable => 0, size => 255 },
 );
 
 =head1 PRIMARY KEY
@@ -168,24 +167,24 @@ __PACKAGE__->set_primary_key("pub_id");
 
 =head1 RELATIONS
 
-=head2 pub_to_funding
+=head2 pub_to_fundings
 
-Type: might_have
+Type: has_many
 
 Related object: L<WarePubs::Schema::Result::PubToFunding>
 
 =cut
 
-__PACKAGE__->might_have(
-  "pub_to_funding",
+__PACKAGE__->has_many(
+  "pub_to_fundings",
   "WarePubs::Schema::Result::PubToFunding",
   { "foreign.pub_id" => "self.pub_id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07036 @ 2013-09-11 08:48:47
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:wTkYpq0WgqzksJWZnvUMfw
+# Created by DBIx::Class::Schema::Loader v0.07036 @ 2013-09-11 13:43:12
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:plSk9O5tmBMsSKRnoRXI1Q
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

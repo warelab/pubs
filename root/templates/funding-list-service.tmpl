@@ -10,8 +10,9 @@
 
 <h1>Fundings ([% fundings.count OR '0' %])</h1>
 
-<a href="[% c.uri_for('/funding/create_form', { agency_id => c.req.param('agency_id') }) %]">Create Fund</a><br/>
+<a class="btn" href="[% c.uri_for('/funding/create_form', { agency_id => c.req.param('agency_id') }) %]">Create Fund</a><br/>
 
+[% UNLESS agency_id %]
   <form>
     <select id="agency_id" name="agency_id" onchange="javascript:$('#filter-form').submit()">
       <option value="0">--restrict by agency--</option>
@@ -20,6 +21,7 @@
       [% END %]
     </select>
   </form>
+[% END %]
 
 [% IF fundings.count > 0 %]
 <div style="text-align:center" class="well">

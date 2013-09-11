@@ -14,8 +14,8 @@ my $db      = DBI->connect(
 );
 
 my @flds = qw(
-    year authors title journal pubmed url data 
-    cover pdf info_115 hide_from_view
+    year authors title journal pubmed url data_path
+    cover pdf comments hide_from_view
 );
 
 my $sql  = sprintf( 

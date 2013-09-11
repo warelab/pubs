@@ -38,10 +38,16 @@ __PACKAGE__->table("pub_to_funding");
 
 =head1 ACCESSORS
 
-=head2 pub_id
+=head2 pub_to_funding_id
 
   data_type: 'integer'
   is_auto_increment: 1
+  is_nullable: 0
+
+=head2 pub_id
+
+  data_type: 'integer'
+  default_value: 1
   is_foreign_key: 1
   is_nullable: 0
 
@@ -55,12 +61,14 @@ __PACKAGE__->table("pub_to_funding");
 =cut
 
 __PACKAGE__->add_columns(
+  "pub_to_funding_id",
+  { data_type => "integer", is_auto_increment => 1, is_nullable => 0 },
   "pub_id",
   {
-    data_type         => "integer",
-    is_auto_increment => 1,
-    is_foreign_key    => 1,
-    is_nullable       => 0,
+    data_type      => "integer",
+    default_value  => 1,
+    is_foreign_key => 1,
+    is_nullable    => 0,
   },
   "funding_id",
   {
@@ -75,13 +83,13 @@ __PACKAGE__->add_columns(
 
 =over 4
 
-=item * L</pub_id>
+=item * L</pub_to_funding_id>
 
 =back
 
 =cut
 
-__PACKAGE__->set_primary_key("pub_id");
+__PACKAGE__->set_primary_key("pub_to_funding_id");
 
 =head1 RELATIONS
 
@@ -116,8 +124,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07036 @ 2013-09-10 11:54:48
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:HXRNLbXjhNBc/ICPOPxb/Q
+# Created by DBIx::Class::Schema::Loader v0.07036 @ 2013-09-11 13:43:12
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:3tPsHrp4VNBf50rxY5O96Q
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

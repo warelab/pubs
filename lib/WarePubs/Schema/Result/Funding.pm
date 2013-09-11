@@ -51,17 +51,19 @@ __PACKAGE__->table("funding");
   is_foreign_key: 1
   is_nullable: 0
 
+=head2 title
+
+  data_type: 'char'
+  default_value: 'unknown'
+  is_nullable: 0
+  size: 255
+
 =head2 award_number
 
   data_type: 'char'
   default_value: (empty string)
   is_nullable: 0
   size: 255
-
-=head2 title
-
-  data_type: 'text'
-  is_nullable: 1
 
 =head2 abstract
 
@@ -80,10 +82,15 @@ __PACKAGE__->add_columns(
     is_foreign_key => 1,
     is_nullable    => 0,
   },
+  "title",
+  {
+    data_type => "char",
+    default_value => "unknown",
+    is_nullable => 0,
+    size => 255,
+  },
   "award_number",
   { data_type => "char", default_value => "", is_nullable => 0, size => 255 },
-  "title",
-  { data_type => "text", is_nullable => 1 },
   "abstract",
   { data_type => "text", is_nullable => 1 },
 );
@@ -99,6 +106,22 @@ __PACKAGE__->add_columns(
 =cut
 
 __PACKAGE__->set_primary_key("funding_id");
+
+=head1 UNIQUE CONSTRAINTS
+
+=head2 C<agency_id>
+
+=over 4
+
+=item * L</agency_id>
+
+=item * L</title>
+
+=back
+
+=cut
+
+__PACKAGE__->add_unique_constraint("agency_id", ["agency_id", "title"]);
 
 =head1 RELATIONS
 
@@ -133,8 +156,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07036 @ 2013-09-10 11:54:48
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:1d36wMauNj4AUQmaNJ3nyg
+# Created by DBIx::Class::Schema::Loader v0.07036 @ 2013-09-11 13:35:03
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:MJstwKfStUIvzxeTXBAYhA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

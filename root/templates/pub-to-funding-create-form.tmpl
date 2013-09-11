@@ -1,0 +1,63 @@
+<script>
+$(document).ready( function () {
+  $('#create-form').submit(function(e) {
+      var req = {};
+      [ 'pub_id', 'funding_id' ].forEach( function (v) {
+        req[v] = 1;
+      });
+
+      var missing = [];
+      $(":input").each(function(e, f) {
+        if ( f.name && req[f.name] && (!f.value || f.value == 0) ) {
+          missing.push( f.name ); 
+        }
+      });
+
+      if ( missing.length ) {
+        alert('Missing the following fields: ' + missing.join(', '));
+        return false;
+      }
+  });
+});
+</script>
+
+[% title = 'Create Pub-to-Funding' %]
+<h1>[% title %]</h1>
+<form id="create-form" action="[% c.uri_for('/pubtofunding/create') %]">
+<table class="table table-bordered">
+  <tr>
+    <th>Pub:</th>
+    <td>
+      [% IF pub %]
+        <input type="hidden" name="pub_id" value="[% pub.id %]">
+        <a href="[% c.uri_for('/pub/view', pub.id) %]">[% pub.title %]</a>
+        ([% pub.year %]: [% pub.journal %], [% pub.authors | truncate(15) %])
+        [% ELSE %]
+          No pub
+        [% END %]
+    </td>
+  </tr>
+  <tr>
+    <th>Funds ([% fundings.count %]):</th>
+    <td>
+      [% IF fundings.count %]
+        <select name="funding_id">
+        <option value="0">--select fund--</option>
+        [% WHILE ( fund = fundings.next ) %]
+          <option value="[% fund.id %]">[% fund.title %][% IF fund.award_number %] ([% fund.award_number %])[% END %]</option>
+        [% END %]
+        </select>
+      [% ELSE %]
+         No funds.
+      [% END %]
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2">
+      <div class="text-center">
+      <input type="submit" class="btn btn-primary" value="Create">
+      </div>
+    </td>
+  </tr>
+</table>
+</form>

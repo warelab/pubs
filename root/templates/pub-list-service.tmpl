@@ -21,7 +21,7 @@ function confirm_delete(title, pub_id) {
     <th>Funding</th>
     <th>Journal</th>
     <th>Authors</th>
-    <th>115 Info</th>
+    <th>115</th>
     <th>&nbsp;</th>
   </tr>
   </thead>
@@ -44,7 +44,7 @@ function confirm_delete(title, pub_id) {
       </td>
       <td>[% pub.journal %]</td>
       <td>[% pub.authors | truncate(40) %]</td>
-      <td>[% pub.info_115 %]</td>
+      <td>[% IF pub.doc_115 %]&#10004;[% ELSE %]&nbsp;[% END %]</td>
       <td>
         <div class="text-center">
         <a class="btn" href="[% c.uri_for('/pub/view', pub.id) %]">View</a>&nbsp;

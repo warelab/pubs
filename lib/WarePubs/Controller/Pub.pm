@@ -3,7 +3,9 @@ package WarePubs::Controller::Pub;
 use Moose;
 use DateTime;
 use Data::Dump 'dump';
-use File::Slurp 'read_file';
+use File::Basename 'fileparse';
+use File::Path 'mkpath';
+use File::Spec::Functions 'catfile';
 use Params::Validate qw(:all);
 use Switch;
 use namespace::autoclean;
@@ -46,7 +48,7 @@ sub create :Local {
     my $dt  = DateTime->now;
     my %required =  (
         year     => { 
-            regex => qr/^\d{4}$/,
+            regex     => qr/^\d{4}$/,
             callbacks => {
                 'year-check' => sub { 
                     my $y = shift;
@@ -63,14 +65,15 @@ sub create :Local {
 
     validate( @params, \%required );
 
-    my $pub      = $c->model('DB')->resultset('Pub')->create({
-        year     => $req->param('year'),
-        title    => $req->param('title'),
-        authors  => $req->param('authors'),
-        journal  => $req->param('journal'),
-        pubmed   => $req->param('pubmed'),
-        url      => $req->param('url'),
-        info_115 => $req->param('info_115'),
+    my $pub       = $c->model('DB')->resultset('Pub')->create({
+        year      => $req->param('year'),
+        title     => $req->param('title'),
+        authors   => $req->param('authors'),
+        journal   => $req->param('journal'),
+        pubmed    => $req->param('pubmed'),
+        url       => $req->param('url'),
+        data_path => $req->param('data_path'),
+        comments  => $req->param('comments'),
     }) or die;
 
     $c->model('DB')->resultset('PubToFunding')->create({
@@ -79,11 +82,29 @@ sub create :Local {
     });
 
     my $dbh = $c->model('DB')->storage->dbh;
-    for my $input ( qw[ pdf cover one15 ] ) {
-        my $upload  = $req->upload( $input ) or next;
-        my $content = read_file($upload->tempname, {binmode => ':raw'}) or next;
+    for my $input ( qw[ pdf cover doc_115 ] ) {
+        my $upload = $req->upload( $input ) or next;
 
-        $dbh->do( "update pub set $input = ?", {}, $content );
+        my ($filename, $directories, $suffix) 
+            = fileparse($upload->filename, qr/\.[^.]*/);
+
+        my $dest_file = join '', $pub->id, $suffix;
+        my $dest_dir  = $c->path_to( qw[ root static pubs ], $input );
+
+        if ( !-d $dest_dir ) {
+            mkpath( $dest_dir );
+        }
+
+        my $dest_path = catfile( $dest_dir, $dest_file );
+
+        if ( !$upload->copy_to( $dest_path ) ) {
+            die sprintf( 
+                "Can't copy '%s' to '%s'", $upload->filename, $dest_path
+            );
+        }
+
+        $pub->set_column( $input => $dest_file );
+        $pub->update;
     }
  
     $c->res->redirect( $c->uri_for('/pub/view', $pub->id ) );
@@ -180,24 +201,33 @@ sub list_service :Local {
         );
     }
 
-    my $search_params;
-    if ( my $filter = $req->param('filter') ) {
-        $search_params = [];
-        for my $fld ( 
-            @{ $c->config->{'search_fields'}{'pub'} || [ 'title' ] }
-        ) {
-            push @$search_params, { $fld => { like => "%$filter%" } };
-        }
-    }
-
+    my $pubs_rs;
     if ( my $funding_id = $req->param('funding_id') ) {
-        push @$search_params, { funding_id => $funding_id };
+#        $pubs_rs = $c->model('DB')->resultset('Pub')->search_related(
+#            'pub_to_fundings',
+#            { funding_id => $funding_id }
+#        );
+        $pubs_rs = $c->model('DB')->resultset('PubToFunding')->search_related(
+            'pub',
+            { funding_id => $funding_id }
+        );
     }
+    else {
+        my $search_params;
+        if ( my $filter = $req->param('filter') ) {
+            $search_params = [];
+            for my $fld ( 
+                @{ $c->config->{'search_fields'}{'pub'} || [ 'title' ] }
+            ) {
+                push @$search_params, { $fld => { like => "%$filter%" } };
+            }
+        }
 
-    my $pubs_rs = $c->model('DB')->resultset('Pub')->search_rs(
-        $search_params,
-        { order_by => { '-' . $sort_order => $order_by } }
-    );
+        $pubs_rs = $c->model('DB')->resultset('Pub')->search_rs(
+            $search_params,
+            { order_by => { '-' . $sort_order => $order_by } }
+        );
+    }
 
     switch ($format) {
         case 'html' {
@@ -295,7 +325,7 @@ sub update :Local {
         authors    => $req->param('authors')    || '',
         pubmed     => $req->param('pubmed')     || '',
         url        => $req->param('url')        || '',
-        data       => $req->param('data')       || '',
+        data_path  => $req->param('data_path')  || '',
         cover      => $req->param('cover')      || '',
         pdf        => $req->param('pdf')        || '',
     });
@@ -316,9 +346,15 @@ sub view :Local {
     my $Pub = $c->model('DB')->resultset('Pub')->find($pub_id)
               or die "Bad pub id '$pub_id'\n";
 
+    my $Funds = $c->model('DB')->resultset('PubToFunding')->search_related(
+        'funding',
+        { pub_id => $pub_id }
+    );
+
     $c->stash(
         pub      => $Pub,
-        template => 'pub-view.tmpl'
+        template => 'pub-view.tmpl',
+        funds    => $Funds,
     );
 }
 

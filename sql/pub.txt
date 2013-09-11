@@ -1,4 +1,4 @@
-year	authors	title	journal	pubmed	url	data	cover	pdf	115	hide
+year	authors	title	journal	pubmed	url	data_path	cover	pdf	comments	hide_from_view
 1989	Kellaris KV, Ware DK, Smith S, Kyte J	Assessment of the number of free cysteines and isolation and identification of cystine-containing peptides from acetylcholine receptor	Biochemistry. 1989 Apr 18;28(8):3469-82	2742850						
 1992	Ahmed CM, Ware DH, Lee SC, Patten CD, Ferrer-Montiel AV, Schinder AF, McPherson JD, Wagner-McPherson CB, Wasmuth JJ, Evans GA, et al.	Primary structure, chromosomal localization, and functional expression of a voltage-gated sodium channel from human brain.	Proc Natl Acad Sci U S A. 1992 Sep 1;89(17):8220-4	1325650						
 1995	Wanner LA, Li G, Ware D, Somssich IE, Davis KR	The phenylalanine ammonia-lyase gene family in Arabidopsis thaliana	Plant Mol Biol. 1995 Jan;27(2):327-38	7888622						

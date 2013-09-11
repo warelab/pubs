@@ -7,6 +7,13 @@ $(document).ready(function() {
     }
   });
 });
+
+function confirm_delete_funding(title, pub_id, funding_id) {
+  if ( confirm('OK to delete pub funding "' + title + '"?') ) {
+    $.post("[% c.uri_for('/pubtofunding/delete') %]?pub_id=" + pub_id + "&funding_id=" + funding_id);
+    location.reload();
+  }
+}
 </script>
 
 [% 
@@ -44,35 +51,63 @@ $(document).ready(function() {
     <td>[% pub.url %]</td>
   </tr>
   <tr>
-    <th align="right">Data:</th>
-    <td>[% pub.data %]</td>
+    <th align="right">Data Path:</th>
+    <td>[% pub.data_path %]</td>
+  </tr>
+  <tr>
+    <th align="right">Comments:</th>
+    <td>[% pub.comments %]</td>
   </tr>
   <tr>
     <th align="right">Cover:</th>
-    <td>[% pub.cover %]</td>
+    <td>
+      [% IF pub.cover %]<img src="/static/pubs/cover/[% pub.cover %]">
+      [% ELSE %]
+        NA
+      [% END %]
+    </td>
   </tr>
   <tr>
     <th align="right">PDF:</th>
-    <td>[% IF pub.pdf %]<a href="[% c.uri_for('/pub/get_pdf/', pub.id) %]" class="btn">Get</a>[% ELSE %]NA[% END %]</td>
+    <td>
+      [% pub.pdf %]
+      [% IF pub.pdf %]<a href="[% c.uri_for('/pub/get_pdf/', pub.id) %]" class="btn">Get</a>[% ELSE %]NA[% END %]
+    </td>
   </tr>
   <tr>
-    <th align="right">Info 115:</th>
-    <td>[% pub.info_115 %]</td>
+    <th align="right">115:</th>
+    <td>
+      [% IF pub.doc_115 %]<a href="[% c.uri_for('/pub/get_115/', pub.id) %]" class="btn">Get</a>[% ELSE %]NA[% END %]
+    </td>
   </tr>
 </table>
 </form>
 
-<pre>[% USE dumper; dumper.dump(pub.pub_to_funding) %]</pre>
-<h2>Funding</h2>
-<table class="table">
+<h2>Funding ([% funds.count %])</h2>
+<a class="btn" href="[% c.uri_for('/pubtofunding/create_form', { pub_id => pub.id }) %]">Create</a>
+<table class="table table-bordered">
   <tr>
     <th>Agency</th>
     <th>Funding</th>
+    <th>Award #</th>
+    <th>&nbsp;</th>
   </tr>
-  <tr>
-    <td><a href="[% #c.uri_for('/agency/view', pub.funding.agency.id) %]">[% #pub.funding.agency.agency_name %]</a></td>
-  </tr>
-  <tr>
-    <td><a href="[% #c.uri_for('/agency/view', pub.funding.id) %]">[% #pub.funding.title OR 'unknown' %]</a></td>
-  </tr>
+  [% WHILE ( fund = funds.next ) %]
+    <tr>
+      <td>
+        <a href="[% c.uri_for('/agency/view', fund.agency_id) %]">[% fund.agency.agency_name %]</a>
+      </td>
+      <td>
+        <a href="[% c.uri_for('/funding/view', fund.id) %]">[% fund.title OR 'NA' %]</a>
+      </td>
+      <td>
+        [% fund.award_number OR 'NA' %]
+      </td>
+      <td>
+        <div class="text-center">
+        <a class="btn" onclick="javascript:confirm_delete_funding('[% fund.agency.agency_name %] - [% fund.title OR "NA" %]', '[% pub.id %]', '[% fund.id %]')">Remove</a>
+        </div>
+      </td>
+    </tr>
+  [% END %]
 </table>
