@@ -100,3 +100,19 @@ $(document).ready( function() {
 </table>
 </form>
 </div>
+
+  <tr>
+    <th align="right">Agency:</th>
+    <td>
+      <select name="agency_id" onchange="alert(document.getElementById('agency_id'))">
+        <option value="0">--select agency--</option>
+        [% FOREACH agency IN agencies %]
+        <option value="[% agency.id %]">[% agency.agency_name %]</option>
+        [% END %]
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <th align="right">Funding:</th>
+    <td><div id="funding">--select agency--</div></td>
+  </tr>

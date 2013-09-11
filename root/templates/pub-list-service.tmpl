@@ -1,29 +1,56 @@
+<script>
+function confirm_delete(title, pub_id) {
+  if ( confirm('OK to delete pub "' + title + '" (' + pub_id + ')?') ) {
+    var url = '[% c.uri_for('/pub/delete') %]/' + pub_id;
+    $.post(url, function() { alert('success!') });
+    location.reload();
+  }
+}
+</script>
 [% IF pubs.count > 0 %]
 <div style="text-align:center" class="well">
-  Found [% pubs.count %] pubs. (<a href="[% c.uri_for('/pub/list_service' { filter => c.req.param('filter'), format => 'csv' } ) %]">Download</a>)
+  Found [% pubs.count %] pubs. <a class="btn" href="[% c.uri_for('/pub/list_service' { filter => c.req.param('filter'), format => 'tab' } ) %]">Download</a>
 </div>
 <table class="table table-striped table-bordered table-hover">
   <thead>
   <tr>
+    <th>
+      <a href="[% c.uri_for('/pub/list', { order_by = 'year', sort_order = colsort(c.req.param('order_by'), 'year', c.request.param('sort_order')) } ) %]">Year</a>
+    </th>
     <th width="300"><a href="[% c.uri_for('/pub/list', { order_by = 'title', sort_order = colsort(c.req.param('order_by'), 'title', c.request.param('sort_order')) } ) %]">Title</a></th>
-    <th><a href="[% c.uri_for('/pub/list', { order_by = 'agency_name' }) %]">Agency</a></th>
     <th>Funding</th>
-    <th><a href="[% c.uri_for('/pub/list', { order_by = 'year', sort_order = colsort(c.req.param('order_by'), 'year', c.request.param('sort_order')) } ) %]">Year</a></th>
     <th>Journal</th>
     <th>Authors</th>
     <th>115 Info</th>
+    <th>&nbsp;</th>
   </tr>
   </thead>
   <tbody>
   [% WHILE ( pub = pubs.next ) %]
     <tr>
-      <td><a href="[% c.uri_for('/pub/edit_form', pub.id) %]">[% pub.title | truncate(40) %]</a></td>
-      <td><a href="[% c.uri_for('/agency/view', pub.funding.agency.id) %]">[% pub.funding.agency.agency_name %]</a></td>
-      <td><a href="[% c.uri_for('/funding/view', pub.funding.id) %]">[% pub.funding.title %]</a></td>
       <td>[% pub.year %]</td>
+      <td>
+        [% IF pub.title; pub.title | truncate(40); ELSE; 'NA'; END %]
+      </td>
+      <td>
+        [% 
+          SET funds = []; 
+          FOREACH x IN pub.pub_to_funding.funding; 
+            SET url = c.uri_for('/agency/view', x.agency.id);
+            funds.push("<a href=\"$url\">${x.agency.agency_name}</a>"); 
+          END; 
+          funds.join(', ') 
+        %]
+      </td>
       <td>[% pub.journal %]</td>
       <td>[% pub.authors | truncate(40) %]</td>
       <td>[% pub.info_115 %]</td>
+      <td>
+        <div class="text-center">
+        <a class="btn" href="[% c.uri_for('/pub/view', pub.id) %]">View</a>&nbsp;
+        <a class="btn" onclick="javascript:confirm_delete('[% pub.title OR "NA" %]', '[% pub.id %]')">Delete</a>
+        </div>
+      </td>
     </tr>
   [% END %]
   </tbody>

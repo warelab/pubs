@@ -171,6 +171,17 @@ sub list_service :Local {
             no_wrapper => 1,
         );
     }
+    elsif ( lc $format eq 'csv' ) {
+        my @cols  = @{ $c->config->{'download_fields'}{'funding'} || [] };
+        my @funds = ([ @cols ]);
+
+        while ( my $fund = $fundings->next ) {
+            push @funds, [ map { $fund->get_column($_) } @cols ];
+        }
+
+        $c->stash( csv => \@funds );
+        $c->forward('View::CSV');
+    }
     else {
         my @funds;
         while ( my $fund = $fundings->next ) {

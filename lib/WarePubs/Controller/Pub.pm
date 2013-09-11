@@ -1,6 +1,11 @@
 package WarePubs::Controller::Pub;
 
 use Moose;
+use DateTime;
+use Data::Dump 'dump';
+use File::Slurp 'read_file';
+use Params::Validate qw(:all);
+use Switch;
 use namespace::autoclean;
 
 BEGIN { extends 'Catalyst::Controller'; }
@@ -37,12 +42,51 @@ Create a pub.
  
 sub create :Local {
     my ( $self, $c ) = @_;
+    my $req = $c->req;
+    my $dt  = DateTime->now;
+    my %required =  (
+        year     => { 
+            regex => qr/^\d{4}$/,
+            callbacks => {
+                'year-check' => sub { 
+                    my $y = shift;
+                    $y < $dt->year + 1 && $y > 1990;
+                },
+            }
+        },
+        title    => 1,
+        authors  => 1,
+        journal  => 1,
+    );
 
-    my $pub = $c->model('DB')->resultset('Pub')->create({
-        foo => 'bar',
+    my @params = map { $_, $req->param($_) } keys %required;
+
+    validate( @params, \%required );
+
+    my $pub      = $c->model('DB')->resultset('Pub')->create({
+        year     => $req->param('year'),
+        title    => $req->param('title'),
+        authors  => $req->param('authors'),
+        journal  => $req->param('journal'),
+        pubmed   => $req->param('pubmed'),
+        url      => $req->param('url'),
+        info_115 => $req->param('info_115'),
+    }) or die;
+
+    $c->model('DB')->resultset('PubToFunding')->create({
+        pub_id     => $pub->id,
+        funding_id => 1, # unknown
     });
+
+    my $dbh = $c->model('DB')->storage->dbh;
+    for my $input ( qw[ pdf cover one15 ] ) {
+        my $upload  = $req->upload( $input ) or next;
+        my $content = read_file($upload->tempname, {binmode => ':raw'}) or next;
+
+        $dbh->do( "update pub set $input = ?", {}, $content );
+    }
  
-    $c->forward( $c->uri_for('/pub/view', $pub->id ) );
+    $c->res->redirect( $c->uri_for('/pub/view', $pub->id ) );
 }
 
 # ----------------------------------------------------------------------
@@ -59,6 +103,28 @@ sub create_form :Local {
         agencies => [ $c->model('DB')->resultset('Agency')->all ],
         template => 'pub-create-form.tmpl'
     );
+}
+
+# ----------------------------------------------------------------------
+=head2 delete
+ 
+Delete a pub.
+ 
+=cut
+ 
+sub delete :Local :Args(1) {
+    my ( $self, $c, $pub_id ) = @_;
+ 
+    my $Pub = $c->model('DB')->resultset('Pub')->find($pub_id)
+              or die "Bad pub id '$pub_id'\n";
+
+    for my $PubFund ( $Pub->pub_to_funding ) {
+        $PubFund->delete;
+    }
+
+    $Pub->delete;
+
+    $c->res->redirect( $c->uri_for('/pub/list') );
 }
 
 # ----------------------------------------------------------------------
@@ -79,15 +145,16 @@ sub edit_form :Local :Args(1) {
         { order_by => { '-asc' => 'agency_name' } }
     );
 
-    my $fundings = $c->model('DB')->resultset('Funding')->search(
-        { agency_id => $pub->funding->agency_id }, 
-        { order_by => { '-asc' => 'title' } }
-    );
+#    my $fundings = $c->model('DB')->resultset('PubToFunding')->search(
+##        { agency_id => $pub->funding->agency_id }, 
+##        { agency_id => $pub->funding->agency_id }, 
+#        { order_by => { '-asc' => 'title' } }
+#    );
 
     $c->stash(
         pub      => $pub,
         agencies => $agencies,
-        fundings => $fundings,
+#        fundings => $fundings,
         template => 'pub-edit-form.tmpl'
     );
 }
@@ -100,11 +167,18 @@ Fetch all pubs.
 =cut
  
 sub list_service :Local {
-    my ($self, $c) = @_;
-    my $req        = $c->request;
-    my $format     = $req->param('format')     || 'json';
-    my $order_by   = $req->param('order_by')   || 'title';
-    my $sort_order = $req->param('sort_order') || 'asc';
+    my ($self, $c)   = @_;
+    my $req          = $c->request;
+    my $order_by     = $req->param('order_by')   || 'title';
+    my $sort_order   = $req->param('sort_order') || 'asc';
+    my $format       = lc $req->param('format')  || 'json';
+    my %valid_format = map { $_, 1 } qw[ json html csv tab ];
+
+    if ( !$valid_format{ $format } ) {
+        die sprintf( "Invalid format '%s.'  Please choose from %s.",
+            $format, join(', ', sort keys %valid_format)
+        );
+    }
 
     my $search_params;
     if ( my $filter = $req->param('filter') ) {
@@ -125,54 +199,61 @@ sub list_service :Local {
         { order_by => { '-' . $sort_order => $order_by } }
     );
 
-    if ( lc $format eq 'html' ) {
-        $c->stash( 
-            pubs       => $pubs_rs,
-            template   => 'pub-list-service.tmpl',
-            no_wrapper => 1,
-        );
-    }
-    elsif ( lc $format eq 'csv' ) {
-        my ( %cols, @header );
-
-        for my $tbl ( qw[ pub funding agency ] ) {
-            my @cols = @{ $c->config->{'download_fields'}{ $tbl } || [] };
-            push @header, map { "$tbl.$_" } @cols;
-            $cols{ $tbl } = [ @cols ];
+    switch ($format) {
+        case 'html' {
+            $c->stash( 
+                pubs       => $pubs_rs,
+                template   => 'pub-list-service.tmpl',
+                no_wrapper => 1,
+            );
         }
 
-        my @pubs = ( [ @header ] );
-
-        while ( my $pub = $pubs_rs->next ) {
-            my %pub    = $pub->get_columns;
-            my %fund   = $pub->funding->get_columns;
-            my %agency = $pub->funding->agency->get_columns;
-
-            push @pubs, [
-                ( map { $pub->get_column($_) } @{ $cols{'pub'} } ),
-                ( map { $pub->funding->get_column($_) } @{ $cols{'fund'} }),
-                (
-                    map { $pub->funding->agency->get_column($_) }
-                      @{ $cols{'agency'} }
-                ),
-            ];
+        case 'json' {
+            my @pubs;
+            while ( my $pub = $pubs_rs->next ) {
+                push @pubs, { 
+                    pub     => { $pub->get_inflated_columns },
+                    funding => { $pub->funding->get_inflated_columns },
+                    agency  => { $pub->funding->agency->get_inflated_columns },
+                };
+            }
+         
+            $c->stash( pubs => \@pubs );
+            $c->forward('View::JSON');
         }
-     
-        $c->stash( csv => \@pubs );
-        $c->forward('View::CSV');
-    }
-    else {
-        my @pubs;
-        while ( my $pub = $pubs_rs->next ) {
-            push @pubs, { 
-                pub     => { $pub->get_inflated_columns },
-                funding => { $pub->funding->get_inflated_columns },
-                agency  => { $pub->funding->agency->get_inflated_columns },
-            };
+
+        else {
+            my ( %cols, @header );
+
+            for my $tbl ( qw[ pub funding agency ] ) {
+                my @cols = @{ $c->config->{'download_fields'}{ $tbl } || [] };
+                push @header, map { "$tbl.$_" } @cols;
+                $cols{ $tbl } = [ @cols ];
+            }
+
+            my @pubs = ( [ @header ] );
+
+            while ( my $pub = $pubs_rs->next ) {
+                my %pub    = $pub->get_columns;
+                my %fund   = $pub->funding->get_columns;
+                my %agency = $pub->funding->agency->get_columns;
+
+                push @pubs, [
+                    ( map { $pub->get_column($_) } @{ $cols{'pub'} } ),
+                    ( map { $pub->funding->get_column($_) } @{ $cols{'fund'} }),
+                    (
+                        map { $pub->funding->agency->get_column($_) }
+                          @{ $cols{'agency'} }
+                    ),
+                ];
+            }
+
+            $c->stash( filename => "warelab-pubs.$format" );
+            $c->stash( format   => $format );
+            $c->stash( csv      => \@pubs );
+            $c->forward('View::CSV');
         }
-     
-        $c->stash( pubs => \@pubs );
-        $c->forward('View::JSON');
+
     }
 }
 

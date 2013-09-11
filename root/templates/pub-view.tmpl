@@ -1,18 +1,24 @@
-[% title = 'View Pub &quot;' _ pub.title _ '&quot;' %]
+<script>
+$(document).ready(function() {
+  $('#delete').click( function(e) {
+    if ( confirm('OK to delete this pub?') ) {
+      $.post("[% c.uri_for('/pub/delete', pub.id) %]");
+      window.location.replace('[% c.uri_for('/pub/list') %]');
+    }
+  });
+});
+</script>
+
+[% 
+  short_title = pub.title | truncate(30);
+  title = 'View Pub &quot;' _ short_title _ '&quot;';
+%]
 
 <h1>[% title %]</h1>
-<a href="[% c.uri_for('/pub/list') %]">All pubs</a>
-<hr>
+<a class="btn" href="[% c.uri_for('/pub/edit_form', pub.id) %]">Edit</a>
+<a class="btn" name="delete" id="delete">Delete</a>
 
-<table border=0>
-  <tr>
-    <th align="right">Agency:</th>
-    <td><a href="[% c.uri_for('/agency/view', pub.funding.agency.id) %]">[% pub.funding.agency.agency_name %]</a></td>
-  </tr>
-  <tr>
-    <th align="right">Funding:</th>
-    <td><a href="[% c.uri_for('/agency/view', pub.funding.id) %]">[% pub.funding.title OR 'unknown' %]</a></td>
-  </tr>
+<table class="table table-bordered">
   <tr>
     <th align="right">Title:</th>
     <td>[% pub.title %]</td>
@@ -47,7 +53,7 @@
   </tr>
   <tr>
     <th align="right">PDF:</th>
-    <td>[% pub.pdf %]</td>
+    <td>[% IF pub.pdf %]<a href="[% c.uri_for('/pub/get_pdf/', pub.id) %]" class="btn">Get</a>[% ELSE %]NA[% END %]</td>
   </tr>
   <tr>
     <th align="right">Info 115:</th>
@@ -55,3 +61,18 @@
   </tr>
 </table>
 </form>
+
+<pre>[% USE dumper; dumper.dump(pub.pub_to_funding) %]</pre>
+<h2>Funding</h2>
+<table class="table">
+  <tr>
+    <th>Agency</th>
+    <th>Funding</th>
+  </tr>
+  <tr>
+    <td><a href="[% #c.uri_for('/agency/view', pub.funding.agency.id) %]">[% #pub.funding.agency.agency_name %]</a></td>
+  </tr>
+  <tr>
+    <td><a href="[% #c.uri_for('/agency/view', pub.funding.id) %]">[% #pub.funding.title OR 'unknown' %]</a></td>
+  </tr>
+</table>

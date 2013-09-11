@@ -19,10 +19,12 @@ requires 'Catalyst::Plugin::Static::Simple';
 requires 'Catalyst::Restarter';
 requires 'Catalyst::View::TT';
 requires 'Catalyst::View::Download::CSV';
+requires 'DBIx::Class::Schema::Loader';
 requires 'Moose';
 requires 'MooseX::MarkAsMethods';
 requires 'namespace::autoclean';
 requires 'String::Trim';
+requires 'Switch';
 requires 'YAML::XS';
 
 test_requires 'Test::More' => '0.88';

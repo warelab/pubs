@@ -1,7 +1,7 @@
 <script>
   function confirm_delete(funding_id) {
     var url = "[% c.uri_for('/funding/delete') %]/" + funding_id;
-    if ( confirm('OK to delete? ' + url) ) {
+    if ( confirm('ok to delete? ' + url) ) {
       $.post("[% c.uri_for('/funding/delete') %]/" + funding_id);
       location.reload();
     }
@@ -22,6 +22,10 @@
   </form>
 
 [% IF fundings.count > 0 %]
+<div style="text-align:center" class="well">
+  Found [% fundings.count %] funds. <a class="btn" href="[% c.uri_for('/funding/list_service' { filter => c.req.param('filter'), format => 'csv' } ) %]">Download</a>
+</div>
+
   <table class="table table-striped table-bordered table-hover">
     <thead>
     <tr>

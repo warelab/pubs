@@ -44,22 +44,10 @@ __PACKAGE__->table("pub");
   is_auto_increment: 1
   is_nullable: 0
 
-=head2 funding_id
-
-  data_type: 'integer'
-  default_value: 1
-  is_foreign_key: 1
-  is_nullable: 0
-
 =head2 year
 
   data_type: 'integer'
   default_value: 0
-  is_nullable: 0
-
-=head2 authors
-
-  data_type: 'text'
   is_nullable: 0
 
 =head2 title
@@ -83,6 +71,11 @@ __PACKAGE__->table("pub");
   is_nullable: 0
   size: 30
 
+=head2 authors
+
+  data_type: 'text'
+  is_nullable: 0
+
 =head2 url
 
   data_type: 'char'
@@ -96,6 +89,19 @@ __PACKAGE__->table("pub");
   default_value: (empty string)
   is_nullable: 0
   size: 255
+
+=head2 info_115
+
+  data_type: 'char'
+  default_value: (empty string)
+  is_nullable: 0
+  size: 255
+
+=head2 hide_from_view
+
+  data_type: 'tinyint'
+  default_value: 0
+  is_nullable: 0
 
 =head2 cover
 
@@ -111,52 +117,41 @@ __PACKAGE__->table("pub");
   is_nullable: 0
   size: 255
 
-=head2 info_115
-
-  data_type: 'char'
-  default_value: (empty string)
-  is_nullable: 0
-  size: 255
-
 =head2 one15
 
-  data_type: 'blob'
-  is_nullable: 1
+  data_type: 'char'
+  is_nullable: 0
+  size: 255
 
 =cut
 
 __PACKAGE__->add_columns(
   "pub_id",
   { data_type => "integer", is_auto_increment => 1, is_nullable => 0 },
-  "funding_id",
-  {
-    data_type      => "integer",
-    default_value  => 1,
-    is_foreign_key => 1,
-    is_nullable    => 0,
-  },
   "year",
   { data_type => "integer", default_value => 0, is_nullable => 0 },
-  "authors",
-  { data_type => "text", is_nullable => 0 },
   "title",
   { data_type => "char", default_value => "", is_nullable => 0, size => 255 },
   "journal",
   { data_type => "char", default_value => "", is_nullable => 0, size => 255 },
   "pubmed",
   { data_type => "char", default_value => "", is_nullable => 0, size => 30 },
+  "authors",
+  { data_type => "text", is_nullable => 0 },
   "url",
   { data_type => "char", default_value => "", is_nullable => 0, size => 255 },
   "data",
   { data_type => "char", default_value => "", is_nullable => 0, size => 255 },
+  "info_115",
+  { data_type => "char", default_value => "", is_nullable => 0, size => 255 },
+  "hide_from_view",
+  { data_type => "tinyint", default_value => 0, is_nullable => 0 },
   "cover",
   { data_type => "char", default_value => "", is_nullable => 0, size => 255 },
   "pdf",
   { data_type => "char", default_value => "", is_nullable => 0, size => 255 },
-  "info_115",
-  { data_type => "char", default_value => "", is_nullable => 0, size => 255 },
   "one15",
-  { data_type => "blob", is_nullable => 1 },
+  { data_type => "char", is_nullable => 0, size => 255 },
 );
 
 =head1 PRIMARY KEY
@@ -173,24 +168,24 @@ __PACKAGE__->set_primary_key("pub_id");
 
 =head1 RELATIONS
 
-=head2 funding
+=head2 pub_to_funding
 
-Type: belongs_to
+Type: might_have
 
-Related object: L<WarePubs::Schema::Result::Funding>
+Related object: L<WarePubs::Schema::Result::PubToFunding>
 
 =cut
 
-__PACKAGE__->belongs_to(
-  "funding",
-  "WarePubs::Schema::Result::Funding",
-  { funding_id => "funding_id" },
-  { is_deferrable => 1, on_delete => "RESTRICT", on_update => "RESTRICT" },
+__PACKAGE__->might_have(
+  "pub_to_funding",
+  "WarePubs::Schema::Result::PubToFunding",
+  { "foreign.pub_id" => "self.pub_id" },
+  { cascade_copy => 0, cascade_delete => 0 },
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2013-09-05 15:31:08
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:SbZ7pCDIJtvKx/F+Z5UT2A
+# Created by DBIx::Class::Schema::Loader v0.07036 @ 2013-09-11 08:48:47
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:wTkYpq0WgqzksJWZnvUMfw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

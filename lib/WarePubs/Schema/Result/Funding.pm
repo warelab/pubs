@@ -117,24 +117,24 @@ __PACKAGE__->belongs_to(
   { is_deferrable => 1, on_delete => "RESTRICT", on_update => "RESTRICT" },
 );
 
-=head2 pubs
+=head2 pub_to_fundings
 
 Type: has_many
 
-Related object: L<WarePubs::Schema::Result::Pub>
+Related object: L<WarePubs::Schema::Result::PubToFunding>
 
 =cut
 
 __PACKAGE__->has_many(
-  "pubs",
-  "WarePubs::Schema::Result::Pub",
+  "pub_to_fundings",
+  "WarePubs::Schema::Result::PubToFunding",
   { "foreign.funding_id" => "self.funding_id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2013-05-31 15:02:04
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:8N2NvmBAynMKp8atkxO0PQ
+# Created by DBIx::Class::Schema::Loader v0.07036 @ 2013-09-10 11:54:48
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:1d36wMauNj4AUQmaNJ3nyg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
