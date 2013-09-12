@@ -71,7 +71,7 @@ function confirm_delete_funding(title, pub_id, funding_id) {
     <th align="right">PDF:</th>
     <td>
       [% pub.pdf %]
-      [% IF pub.pdf %]<a href="[% c.uri_for('/pub/get_pdf/', pub.id) %]" class="btn">Get</a>[% ELSE %]NA[% END %]
+      [% IF pub.pdf %]<a href="[% c.uri_for('/static/pubs/pdf/', pub.pdf) %]" class="btn">Get</a>[% ELSE %]NA[% END %]
     </td>
   </tr>
   <tr>

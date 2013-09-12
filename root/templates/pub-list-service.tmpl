@@ -18,7 +18,6 @@ function confirm_delete(title, pub_id) {
       <a href="[% c.uri_for('/pub/list', { order_by = 'year', sort_order = colsort(c.req.param('order_by'), 'year', c.request.param('sort_order')) } ) %]">Year</a>
     </th>
     <th width="300"><a href="[% c.uri_for('/pub/list', { order_by = 'title', sort_order = colsort(c.req.param('order_by'), 'title', c.request.param('sort_order')) } ) %]">Title</a></th>
-    <th>Funding</th>
     <th>Journal</th>
     <th>Authors</th>
     <th>115</th>
@@ -31,16 +30,6 @@ function confirm_delete(title, pub_id) {
       <td>[% pub.year %]</td>
       <td>
         [% IF pub.title; pub.title | truncate(40); ELSE; 'NA'; END %]
-      </td>
-      <td>
-        [% 
-          SET funds = []; 
-          FOREACH x IN pub.pub_to_funding.funding; 
-            SET url = c.uri_for('/agency/view', x.agency.id);
-            funds.push("<a href=\"$url\">${x.agency.agency_name}</a>"); 
-          END; 
-          funds.join(', ') 
-        %]
       </td>
       <td>[% pub.journal %]</td>
       <td>[% pub.authors | truncate(40) %]</td>

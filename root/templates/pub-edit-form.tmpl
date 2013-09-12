@@ -3,48 +3,13 @@ short_title = pub.title | truncate(30);
 title = 'Edit Pub &quot;' _ short_title _ '&quot;' 
 %]
 
-<script>
-function update_funding_select() {
-//  alert('hey');
-}
-
-$(document).ready( function() {
-//  update_funding_select();
-});
-</script>
-
 <div class="span12">
 <h1>[% title %]</h1>
 <form method="post" action="[% c.uri_for('/pub/update') %]" enctype="multipart/form-data">
-<table border=0>
+<table class="table table-bordered">
   <tr>
     <th valign="top" align="right">Title:</th>
     <td><textarea class="span8" name="title" rows="5" cols="80">[% pub.title %]</textarea></td>
-  </tr>
-  <tr>
-    <th valign="top" align="right">Funding:</th>
-    <td>
-      [% IF agencies.count > 0 %]
-        <select name="agency_id"> <!-- onchange="update_funding_select()" -->
-          [% WHILE ( agency = agencies.next ) %]
-          <option value="[% agency.id %]"[% IF pub.funding.agency_id == agency.id; ' selected'; END %]>[% agency.agency_name %]</option>
-          [% END %]
-        </select>
-      [% ELSE %]
-        No agencies.
-      [% END %]
-
-      <div id="funding_select"></div>
-      [% IF fundings.count > 0 %]
-        <select name="funding_id">
-          [% WHILE ( funding = fundings.next ) %]
-          <option value="[% funding.id %]"[% IF pub.funding_id == funding.id; ' selected'; END %]>[% funding.title %][% IF funding.award_number %] ([% funding.award_number %])[% END %]</option>
-          [% END %]
-        </select>
-      [% ELSE %]
-        No funding.
-      [% END %]
-    </td>
   </tr>
   <tr>
     <th align="right">Journal:</th>
@@ -71,22 +36,35 @@ $(document).ready( function() {
     <td><input name="data_path" type="text" value="[% pub.data_path %]" size="60"></td>
   </tr>
   <tr>
-    <th align="right">Cover:</th>
-    <td><input name="cover" type="text" value="[% pub.cover %]" size="60"></td>
-  </tr>
-  <tr>
-    <th align="right">PDF:</th>
-    <td><input name="pdf" type="text" value="[% pub.pdf %]" size="60"></td>
-  </tr>
-  <tr>
     <th align="right">Comments:</th>
     <td>
       <input name="comments" type="text" value="[% pub.comments %]" size="60">
     </td>
   </tr>
   <tr>
+    <th align="right">Cover:</th>
+    <td>
+      [% IF pub.cover %]<img src="/static/pubs/cover/[% pub.cover %]"><br/>
+      [% ELSE %] No cover.
+      [% END %]
+      <input name="cover" type="file">
+    </td>
+  </tr>
+  <tr>
+    <th align="right">PDF:</th>
+    <td>
+      [% IF pub.pdf %]<a href="/static/pubs/pdf/[% pub.pdf %]" class="btn">Download</a>
+      [% ELSE %] No PDF.
+      [% END %]
+      <input name="pdf" type="file">
+    </td>
+  </tr>
+  <tr>
     <th align="right">115:</th>
     <td>
+      [% IF pub.doc_115 %]<a href="/static/pubs/pdf/[% pub.doc_115 %]" class="btn">Download</a>
+      [% ELSE %] No 115.
+      [% END %]
       <input name="doc_115" type="file">
     </td>
   </tr>
@@ -94,25 +72,8 @@ $(document).ready( function() {
     <td align="center" colspan="2">
       <input type="hidden" name="pub_id" value="[% pub.id %]">
       <button type="submit" class="btn btn-primary">Update</button>
-      <button type="reset" class="btn">Reset</button>
     </td>
   </tr>
 </table>
 </form>
 </div>
-
-  <tr>
-    <th align="right">Agency:</th>
-    <td>
-      <select name="agency_id" onchange="alert(document.getElementById('agency_id'))">
-        <option value="0">--select agency--</option>
-        [% FOREACH agency IN agencies %]
-        <option value="[% agency.id %]">[% agency.agency_name %]</option>
-        [% END %]
-      </select>
-    </td>
-  </tr>
-  <tr>
-    <th align="right">Funding:</th>
-    <td><div id="funding">--select agency--</div></td>
-  </tr>

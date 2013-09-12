@@ -9,7 +9,7 @@ my $file    = shift or die 'No file';
 my $db_name = shift or die 'No db name';
 my $p       = Text::RecordParser::Tab->new( $file );
 my $db      = DBI->connect(
-    "dbi:mysql:$db_name", 'kclark', 'g0p3rl!',
+    "dbi:mysql:host=cabot;database=$db_name", 'kclark', 'g0p3rl!',
     { RaiseError => 1 }
 );
 

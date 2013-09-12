@@ -81,32 +81,8 @@ sub create :Local {
         funding_id => 1, # unknown
     });
 
-    my $dbh = $c->model('DB')->storage->dbh;
-    for my $input ( qw[ pdf cover doc_115 ] ) {
-        my $upload = $req->upload( $input ) or next;
+    $self->_file_uploads( $c, $pub );
 
-        my ($filename, $directories, $suffix) 
-            = fileparse($upload->filename, qr/\.[^.]*/);
-
-        my $dest_file = join '', $pub->id, $suffix;
-        my $dest_dir  = $c->path_to( qw[ root static pubs ], $input );
-
-        if ( !-d $dest_dir ) {
-            mkpath( $dest_dir );
-        }
-
-        my $dest_path = catfile( $dest_dir, $dest_file );
-
-        if ( !$upload->copy_to( $dest_path ) ) {
-            die sprintf( 
-                "Can't copy '%s' to '%s'", $upload->filename, $dest_path
-            );
-        }
-
-        $pub->set_column( $input => $dest_file );
-        $pub->update;
-    }
- 
     $c->res->redirect( $c->uri_for('/pub/view', $pub->id ) );
 }
 
@@ -141,6 +117,15 @@ sub delete :Local :Args(1) {
 
     for my $PubFund ( $Pub->pub_to_funding ) {
         $PubFund->delete;
+    }
+
+    for my $upload_type ( qw[ cover pdf doc_115 ] ) {
+        my $file = $self->$upload_type() or next;
+        my $path = $c->path_to( qw[ root static pubs ], $upload_type, $file );
+
+        if ( -e $path ) {
+            unlink $path;
+        }
     }
 
     $Pub->delete;
@@ -320,17 +305,16 @@ sub update :Local {
     $pub->update({
         title      => $title,
         journal    => $journal,
-        funding_id => $req->param('funding_id') || 1,
         year       => $req->param('year')       || '',
         authors    => $req->param('authors')    || '',
         pubmed     => $req->param('pubmed')     || '',
         url        => $req->param('url')        || '',
         data_path  => $req->param('data_path')  || '',
-        cover      => $req->param('cover')      || '',
-        pdf        => $req->param('pdf')        || '',
     });
 
-    $c->res->redirect( $c->uri_for('/pub/list') );
+    $self->_file_uploads( $c, $pub );
+
+    $c->res->redirect( $c->uri_for('/pub/view', $pub->id) );
 }
 
 # ----------------------------------------------------------------------
@@ -356,6 +340,43 @@ sub view :Local {
         template => 'pub-view.tmpl',
         funds    => $Funds,
     );
+}
+
+# ----------------------------------------------------------------------
+=head2 _file_uploads
+ 
+Handle file uploads for create/update.
+ 
+=cut
+ 
+sub _file_uploads :Local {
+    my ( $self, $c, $pub ) = @_;
+    my $req = $c->req;
+
+    for my $input ( qw[ pdf cover doc_115 ] ) {
+        my $upload = $req->upload( $input ) or next;
+
+        my ($filename, $directories, $suffix) 
+            = fileparse($upload->filename, qr/\.[^.]*/);
+
+        my $dest_file = join '', $pub->id, $suffix;
+        my $dest_dir  = $c->path_to( qw[ root static pubs ], $input );
+
+        if ( !-d $dest_dir ) {
+            mkpath( $dest_dir );
+        }
+
+        my $dest_path = catfile( $dest_dir, $dest_file );
+
+        if ( !$upload->copy_to( $dest_path ) ) {
+            die sprintf( 
+                "Can't copy '%s' to '%s'", $upload->filename, $dest_path
+            );
+        }
+
+        $pub->set_column( $input => $dest_file );
+        $pub->update;
+    }
 }
 
 # ----------------------------------------------------------------------

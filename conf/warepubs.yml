@@ -7,7 +7,7 @@ jsonp: 1
 Model::DB:
   connect_info:
     dsn: "dbi:mysql:warepubs"
-    host: "localhost"
+    host: "cabot"
     user: "kclark"
     password: "g0p3rl!"
 
