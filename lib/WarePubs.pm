@@ -1,95 +1,90 @@
 package WarePubs;
+use Mojo::Base 'Mojolicious';
 
-use Moose;
-use namespace::autoclean;
+use Mojolicious::Plugin::TtRenderer;
+use Mojolicious::Plugin::YamlConfig;
+use WarePubs::Schema;
 
-use Catalyst::Runtime 5.80;
+# This method will run once at server start
+sub startup {
 
-# Set flags and add plugins for the application.
-#
-# Note that ORDERING IS IMPORTANT here as plugins are initialized in order,
-# therefore you almost certainly want to keep ConfigLoader at the head of the
-# list if you're using it.
-#
-#         -Debug: activates the debug mode for very useful log messages
-#   ConfigLoader: will load the configuration from a Config::General file in the
-#                 application's home directory
-# Static::Simple: will serve static files from the application's root
-#                 directory
+    my $self = shift;
 
-use Catalyst qw/
-    -Debug
-    ConfigLoader
-    Static::Simple
-/;
+    $self->plugin('tt_renderer');
+    $self->plugin('yaml_config');
 
-extends 'Catalyst';
+    # Documentation browser under "/perldoc"
+    $self->plugin('PODRenderer');
 
-our $VERSION = '0.01';
 
-# Configure the application.
-#
-# Note that settings in warepubs.conf (or other external
-# configuration file that you set up manually) take precedence
-# over this when using ConfigLoader. Thus configuration
-# details given here can function as a default configuration,
-# with an external configuration file acting as an override for
-# local deployment.
+    $self->defaults(layout => 'default');
 
-__PACKAGE__->config(
-    name => 'WarePubs',
+    $self->helper( schema => sub { WarePubs::Schema->connect( $self->config->{'connect_info'} ) } );
 
-    # Disable deprecated behavior needed by old applications
-    disable_component_resolution_regex_fallback => 1,
+    # Router
+    my $r = $self->routes;
 
-    enable_catalyst_header => 1, # Send X-Catalyst header
+    # Normal route to controller
+    $r->get('/')->to('main#index');
 
-    'Plugin::ConfigLoader' => { 
-        file => __PACKAGE__->path_to('conf', 'warepubs.yml') 
-    },
+    $r->get('/pubs/list')->name('pubs-list')->to(
+        controller => 'pubs',
+        action => 'list',
+        format => 'html',
+    );
 
-    'Plugin::Static::Simple' => {
-        dirs => [
-            'static',
-            qr/^(images|css)/,
-        ],
-    },
+    $r->get('/agencies/list')->to(
+        controller => 'agencies',
+        action => 'list',
+        format => 'html',
+    );
 
-    'View::JSON' => {
-        allow_callback  => 1,    
-        # callback_param  => 'cb',
-        # expose_stash    => [ qw(foo bar) ], # defaults to everything
-    },
-);
+    $r->get('/agencies/view/:agency_id')->name('agency-view')->to(
+        controller => 'agencies',
+        action => 'view',
+    );
 
-# Start the application
-__PACKAGE__->setup();
+    $r->get('/funding/view/:funding')->name('funding-view')->to(
+        controller => 'agencies',
+        action => 'view',
+    );
 
-=head1 NAME
+    $r->get('/agencies/list_service')->to(
+        controller => 'agencies',
+        action => 'list_service',
+        format => 'html',
+    );
 
-WarePubs - Catalyst based application
+    $r->get('/funding/list/:agency_id')->to(
+        controller => 'funding',
+        action => 'list',
+        format => 'html',
+        agency_id => '',
+    );
 
-=head1 SYNOPSIS
+    $r->get('/funding/create_form/:agency_id')->name('funding-create_form')->to(
+        controller => 'funding',
+        action => 'create_form',
+        agency_id => '',
+    );
 
-    script/warepubs_server.pl
+    $r->get('/funding/edit_form/:funding_id')->name('funding-edit_form')->to(
+        controller => 'funding',
+        action => 'edit_form',
+    );
 
-=head1 DESCRIPTION
+    $r->post('/funding/create')->to(
+        controller => 'funding',
+        action => 'create',
+    );
 
-[enter your description here]
+    $r->get('/funding/list_service/:agency_id')->name('funding-list_service')->to(
+        controller => 'funding',
+        action => 'list_service',
+        format => 'html',
+        agency_id => '',
+    );
 
-=head1 SEE ALSO
-
-L<WarePubs::Controller::Root>, L<Catalyst>
-
-=head1 AUTHOR
-
-Ken Youens-Clark
-
-=head1 LICENSE
-
-This library is free software. You can redistribute it and/or modify
-it under the same terms as Perl itself.
-
-=cut
+}
 
 1;
