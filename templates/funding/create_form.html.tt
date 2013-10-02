@@ -1,0 +1,66 @@
+<script>
+    $(function() {
+        $('#funding').kbaseFormBuilder(
+            {
+                canSubmit : true,
+                submitButton : 'Create',
+                method : 'post',
+                action : '/funding/create',
+                submitCallback : function (e, $form, $fb) {
+
+                    var valid = $fb.validateForm();
+                    console.log($fb.getFormValuesAsObject());
+                    console.log(valid);
+                    if (! valid) {
+                        e.stopPropagation(); e.preventDefault();
+                    }
+                },
+                canReset : true,
+                resetButton : 'Reset',
+                elements : [
+                    {
+                        key : 'agency_id',
+                        label : 'Agency',
+                        type : 'select',
+                        values : [% agencies %],
+                        selected : '[% funding.agency_id || selected_agency_id %]',
+                        validate : {regex : new RegExp('.'), msg : 'Please select an agency'},
+                    },
+                    {
+                        key : 'award_number',
+                        label : 'Award Number',
+                        type : 'text',
+                        value : '[% funding.award_number | html_entity %]',
+                        validate : {regex : new RegExp('.'), msg : 'Please provide an award number'},
+                    },
+                    {
+                        key : 'title',
+                        type : 'text',
+                        value : '[% funding.title | html_entity %]',
+                        validate : {regex : new RegExp('.'), msg : 'Please provide a title'},
+                    },
+                    {
+                        key : 'abstract',
+                        type : 'textarea',
+                        value : '[% funding.abstract | html_entity %]',
+                        validate : {regex : new RegExp('.'), msg : 'Please provide an abstract'},
+                    },
+                    {
+                        key : 'funding_id',
+                        type : 'hidden',
+                        value : '[% funding.funding_id %]',
+                    },
+
+                ]
+            }
+        );
+    });
+</script>
+
+<div class = 'row'>
+    <div class = 'col-lg-12'>
+        <h1>[% title %]</h1>
+    </div>
+</div>
+
+<div id = 'funding'></div>

@@ -1,0 +1,28 @@
+[% title = 'Agencies' %]
+
+<script>
+  $(document).ready(function() {
+    $('#filter-form').submit(function(e) {
+        e.preventDefault();
+        var url = "[% c.url_for('/agencies/list_service' ) %]?filter=" + $('#filter').val();
+        console.log(url);
+        $.get(url, function(html) {
+            $('#agencies').html(html);
+        });
+    });
+
+    $('#filter').keyup(function(event) { $('#filter-form').submit() });
+    $('#filter').focus();
+    $('#filter-form').submit();
+  });
+</script>
+
+[% PROCESS 'filter-form.tt' %]
+
+<div id="agencies">
+  <div style="text-align:center" class="well">
+  Retrieving agencies...<br/>
+  <i class = 'icon-spinner icon-spin icon-4x'></i>
+  </div>
+</div>
+

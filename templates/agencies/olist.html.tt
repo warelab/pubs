@@ -1,0 +1,24 @@
+<style>
+    td {vertical-align : top}
+</style>
+
+<table border = '1'>
+    <thead>
+        <tr>
+            <th>Agency Name</th>
+            <th>URL Template</th>
+            <th>Funding</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        [% FOREACH agency IN agencies %]
+            <tr>
+                <td style = 'width : 25%'>[% agency.agency_name %]</td>
+                <td>[% agency.url_template OR 'NA' %]</td>
+                <td>[% agency.fundings.all OR '0' %]</td>
+            </tr>
+        [% END %]
+    </tbody>
+
+</table>

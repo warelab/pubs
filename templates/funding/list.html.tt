@@ -1,0 +1,24 @@
+<script>
+  $(document).ready(function() {
+    $('#filter-form').submit(function(e) {
+        e.preventDefault();
+        var url = "[% c.url_for('/funding/list_service') %]?filter=" +  $('#filter').val() + '&agency_id=' + $('#agency_id').val();
+        $.get(url, function(html) {
+            $('#fundings').html(html);
+        });
+    });
+
+    $('#filter').keyup( function(event) { $('#filter-form').submit() });
+    $('#filter').focus();
+    $('#filter-form').submit();
+  });
+</script>
+
+[% PROCESS 'filter-form.tt' %]
+
+<div id="fundings">
+  <div style="text-align:center" class="well">
+  Retrieving funds...<br/>
+  <i class = 'icon-spin icon-spinner icon-4x'></i>
+  </div>
+</div>

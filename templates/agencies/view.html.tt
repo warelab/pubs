@@ -1,0 +1,32 @@
+[% title = 'View Agency &quot;' _ (agency.agency_name OR 'unknown') _ '&quot;' %]
+
+<script>
+  $(document).ready(function() {
+    var url = "[% c.url_for('funding-list_service', { agency_id => agency.id } ) %]";
+    console.log(url);
+    $.get(url, function(html) {
+        $('#fundings').html(html);
+    });
+  });
+</script>
+
+
+<h1>[% title %]</h1>
+<a href="[% c.url_for('/agency/edit_form', agency.id ) %]">Edit</a>
+<table class="table table-bordered">
+  <tr>
+    <th align="right">Agency Name:</th>
+    <td>[% agency.agency_name %]</td>
+  </tr>
+  <tr>
+    <th align="right">URL Template:</th>
+    <td>[% agency.url_template %]</td>
+  </tr>
+</table>
+
+<div id="fundings">
+  <div style="text-align:center" class="well">
+  Retrieving funds...<br/>
+  <img src="/static/images/loading.gif">
+  </div>
+</div>
