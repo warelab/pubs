@@ -1,14 +1,15 @@
-package WarePubs::Agencies;
+package WarePubs::Agency;
+
 use Mojo::Base 'Mojolicious::Controller';
 
 use Data::Dumper;
 
-# This action will render a template
-
+# ----------------------------------------------------------------------  
 sub list {
     shift->render();
 }
 
+# ----------------------------------------------------------------------  
 sub list_service {
     my $self = shift;
 
@@ -19,7 +20,9 @@ sub list_service {
     if ( my $filter = $self->param('filter') ) {
         $search_params = [];
         for my $fld (
-            @{ $self->stash('config')->{'search_fields'}{'agencies'} || [ 'agency_name' ] }
+            @{ $self->stash('config')->{'search_fields'}{'agency'} 
+               || [ 'agency_name' ] 
+            }
         ) {
             push @$search_params, { $fld => { like => "%$filter%" } };
         }
@@ -34,7 +37,7 @@ sub list_service {
 
     $self->respond_to(
         json => { json => [$agencies->all] },
-        txt  => { 'text' => Dumper([$agencies->all]) },
+        txt  => { text => Dumper([$agencies->all]) },
         html => sub {
             $self->render(
                 agencies => $agencies,
@@ -43,6 +46,7 @@ sub list_service {
     );
 }
 
+# ----------------------------------------------------------------------  
 sub view {
     my $self = shift;
     my $agency_id = $self->param('agency_id');

@@ -1,9 +1,9 @@
 package WarePubs::Pubs;
-use Mojo::Base 'Mojolicious::Controller';
 
 use Data::Dumper;
+use Mojo::Base 'Mojolicious::Controller';
 
-# This action will render a template
+# ----------------------------------------------------------------------  
 sub list {
     my $self = shift;
 
@@ -41,6 +41,5 @@ print STDERR Dumper($self->req->url->path->to_abs_string), "\n";
         }
     );
 }
-
 
 1;

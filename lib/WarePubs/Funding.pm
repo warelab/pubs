@@ -1,11 +1,12 @@
 package WarePubs::Funding;
+
 use Mojo::Base 'Mojolicious::Controller';
 
 use Data::Dumper;
 use JSON;
 use String::Trim 'trim';
 
-# This action will render a template
+# ----------------------------------------------------------------------  
 sub list {
     my $self = shift;
 
@@ -18,7 +19,7 @@ sub list {
 
     $self->respond_to(
         json => { json => [$funding->all] },
-        txt  => { 'text' => Dumper([$funding->all]) },
+        txt  => { text => Dumper([$funding->all]) },
         html => sub {
             $self->render(
                 agency_id => $self->param('agency_id'),
@@ -28,6 +29,7 @@ sub list {
     );
 }
 
+# ----------------------------------------------------------------------  
 sub list_service {
     my $self = shift;
     my $order_by   = $self->param('order_by')   || 'title';
@@ -37,7 +39,9 @@ sub list_service {
     if ( my $filter = $self->param('filter') ) {
         $search_params = [];
         for my $fld (
-            @{ $self->stash('config')->{'search_fields'}{'funding'} || [ 'title' ] }
+            @{ $self->stash('config')->{'search_fields'}{'funding'} 
+               || [ 'title' ] 
+            }
         ) {
             push @$search_params, { $fld => { like => "%$filter%" } };
         }
@@ -52,6 +56,7 @@ sub list_service {
         $search_params,
         { order_by => { '-' . $sort_order => $order_by } }
     );
+
 print STDERR "AID ", $agency_id, "\n";
     $self->respond_to(
         html => sub {
@@ -62,13 +67,18 @@ print STDERR "AID ", $agency_id, "\n";
                 fundings   => $fundings,
             )
         },
+
         csv => sub {
-            my @cols  = @{ $self->stash('config')->{'download_fields'}{'funding'} || [] };
+            my @cols  = @{ 
+                $self->stash('config')->{'download_fields'}{'funding'} || [] 
+            };
+
             my @funds = ([ @cols ]);
 
             while ( my $fund = $fundings->next ) {
                 push @funds, [ map { $fund->get_column($_) } @cols ];
             }
+
             $self->render(text => \@funds)
         },
 
@@ -80,62 +90,57 @@ print STDERR "AID ", $agency_id, "\n";
             $self->render(json => [\@funds]);
         },
     );
-
 }
 
+# ----------------------------------------------------------------------  
 sub create_form {
     my $self = shift;
-print STDERR "FUNDING CF\n";
+
+    print STDERR "FUNDING CF\n";
+
     $self->render(
-        title => 'Create Funding',
+        title              => 'Create Funding',
         selected_agency_id => $self->param('agency_id'),
-        agencies   => JSON->new->allow_nonref->encode(
-            [
-                (
-                    {name => '--select agency--', value => ''},
-                    map
-                        {{name => $_->agency_name, value => $_->agency_id}}
-                            $self->schema->resultset('Agency')->all
-                )
-            ]
-        ),
+        agencies           => JSON->new->allow_nonref->encode([(
+            { name => '--select agency--', value => '' },
+            map { { name => $_->agency_name, value => $_->agency_id } }
+                $self->schema->resultset('Agency')->all
+        )]),
     );
 }
 
+# ----------------------------------------------------------------------  
 sub edit_form {
     my $self = shift;
 
-    my $Funding = $self->schema->resultset('Funding')->find($self->param('funding_id'))
-                  or die "Can't find funding id '" + $self->param('funding_id') + "'";
-print STDERR "RENDERZ\n";
+    my $Funding = $self->schema->resultset('Funding')->find(
+        $self->param('funding_id')
+    ) or die "Can't find funding id '" + $self->param('funding_id') + "'";
+
+    print STDERR "RENDERZ\n";
 
     $self->render(
-        agencies   => JSON->new->allow_nonref->encode(
-            [
-                (
-                    {name => '--select agency--', value => ''},
-                    map
-                        {{name => $_->agency_name, value => $_->agency_id}}
-                            $self->schema->resultset('Agency')->all
-                )
-            ]
-        ),
-
+        agencies   => JSON->new->allow_nonref->encode([(
+            { name => '--select agency--', value => '' },
+            map { { name => $_->agency_name, value => $_->agency_id } }
+                $self->schema->resultset('Agency')->all
+        )]),
         funding  => $Funding,
         template => 'funding/create_form',
-        title => 'Edit Funding',
+        title    => 'Edit Funding',
     );
 }
 
+# ----------------------------------------------------------------------  
 sub view {
     my $self = shift;
     my $funding_id = $self->param('funding_id');
     my ($Funding) = $self->schema->resultset('Funding')->find($funding_id)
         or die "Can't find agency id '$funding_id'";
     $self->render(funding => $Funding);
-
 }
 
+# ----------------------------------------------------------------------  
 sub create {
     my ( $self ) = @_;
 
@@ -150,11 +155,12 @@ sub create {
     $self->redirect_to('agency-view', agency_id => $agency_id );
 }
 
+# ----------------------------------------------------------------------  
 sub update {
-    my $self = shift;
-    my $funding_id   = $self->param('funding_id');
-    my $Funding      = $self->schema->resultset('Funding')->find($funding_id)
-                       or die "Can't find funding id '$funding_id'";
+    my $self       = shift;
+    my $funding_id = $self->param('funding_id');
+    my $Funding    = $self->schema->resultset('Funding')->find($funding_id)
+                     or die "Can't find funding id '$funding_id'";
 
     $Funding->update({
         agency_id    => $self->param('agency_id'),
@@ -165,6 +171,5 @@ sub update {
 
     $self->redirect_to('funding-view', funding_id => $funding_id );
 }
-
 
 1;

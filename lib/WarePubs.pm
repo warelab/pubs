@@ -16,6 +16,7 @@ sub startup {
     # Documentation browser under "/perldoc"
     $self->plugin('PODRenderer');
 
+    $self->secret('Living is easy with eyes closed.');
 
     $self->defaults(layout => 'default');
 
@@ -31,30 +32,30 @@ sub startup {
     # Normal route to controller
     $r->get('/')->to('main#index');
 
-    $r->get('/pubs/list')->name('pubs-list')->to(
-        controller => 'pubs',
+    $r->get('/pub/list')->name('pub-list')->to(
+        controller => 'pub',
         action => 'list',
         format => 'html',
     );
 
-    $r->get('/agencies/list')->to(
-        controller => 'agencies',
+    $r->get('/agency/list')->to(
+        controller => 'agency',
         action => 'list',
         format => 'html',
     );
 
-    $r->get('/agencies/view/:agency_id')->name('agency-view')->to(
-        controller => 'agencies',
+    $r->get('/agency/view/:agency_id')->name('agency-view')->to(
+        controller => 'agency',
         action => 'view',
     );
 
     $r->get('/funding/view/:funding')->name('funding-view')->to(
-        controller => 'agencies',
+        controller => 'funding',
         action => 'view',
     );
 
-    $r->get('/agencies/list_service')->to(
-        controller => 'agencies',
+    $r->get('/agency/list_service')->to(
+        controller => 'agency',
         action => 'list_service',
         format => 'html',
     );
