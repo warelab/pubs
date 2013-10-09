@@ -8,8 +8,8 @@ connect_info:
     dsn: "dbi:mysql:warepubs"
     host: "localhost"
     port: 3306
-    user: "thomason"
-    password: ""
+    user: "kclark"
+    password: "g0p3rl!"
 
 search_fields:
   pub:

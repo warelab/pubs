@@ -19,7 +19,11 @@ sub startup {
 
     $self->defaults(layout => 'default');
 
-    $self->helper( schema => sub { WarePubs::Schema->connect( $self->config->{'connect_info'} ) } );
+    $self->helper( 
+        schema => sub { 
+            WarePubs::Schema->connect( $self->config->{'connect_info'} ) 
+        } 
+    );
 
     # Router
     my $r = $self->routes;
