@@ -1,17 +1,19 @@
 package WarePubs;
-use Mojo::Base 'Mojolicious';
 
+use Mojo::Base 'Mojolicious';
 use Mojolicious::Plugin::TtRenderer;
 use Mojolicious::Plugin::YamlConfig;
 use WarePubs::Schema;
 
-# This method will run once at server start
+# ----------------------------------------------------------------------  
 sub startup {
-
     my $self = shift;
 
     $self->plugin('tt_renderer');
-    $self->plugin('yaml_config');
+    $self->plugin(
+        'yaml_config', 
+        { file => $self->home->rel_file('conf/ware_pubs.yaml') }
+    );
 
     # Documentation browser under "/perldoc"
     $self->plugin('PODRenderer');
@@ -83,7 +85,9 @@ sub startup {
         action => 'create',
     );
 
-    $r->get('/funding/list_service/:agency_id')->name('funding-list_service')->to(
+    $r->get('/funding/list_service/:agency_id')
+      ->name('funding-list_service')
+      ->to(
         controller => 'funding',
         action => 'list_service',
         format => 'html',
