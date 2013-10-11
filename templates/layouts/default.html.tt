@@ -1,106 +1,97 @@
-[%- IF no_wrapper -%]
-  [% content %]
-[%- ELSE -%]
-    <!DOCTYPE html>
+<!DOCTYPE html>
 
-    <html>
+<html>
+    <head>
+        <script src="/ext/jquery/jquery-1.10.2.min.js"></script>
+        <script src="/ext/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+        <script src="/ext/datatables/jquery.dataTables.min.js"></script>
+        <link href="/ext/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
+        <link href="/ext/font-awesome/3.2.1/css/font-awesome.min.css" rel="stylesheet">
 
-        <head>
+        <script src = '/widgets/kbwidget.js'></script>
+        <script src = '/widgets/kbaseButtonControls.js'></script>
+        <script src = '/widgets/kbaseBox.js'></script>
+        <script src = '/widgets/kbasePrompt.js'></script>
+        <script src = '/widgets/kbaseDeletePrompt.js'></script>
+        <script src = '/widgets/kbaseErrorPrompt.js'></script>
+        <script src = '/widgets/kbaseAccordion.js'></script>
+        <script src = '/widgets/kbaseTabs.js'></script>
+        <script src = '/widgets/kbaseTable.js'></script>
+        <script src = '/widgets/kbaseDataBrowser.js'></script>
+        <script src = '/widgets/kbaseFormBuilder.js'></script>
 
-            <script src="/ext/jquery/jquery-1.10.2.min.js"></script>
+        <title>[% title OR "WareLab Pubs" %]</title>
+    </head>
 
+    <style>
+        body { padding-top: 70px; }
+    </style>
 
-            <script src="/ext/bootstrap/3.0.0/js/bootstrap.min.js"></script>
-            <link href="/ext/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
-            <link href="/ext/font-awesome/3.2.1/css/font-awesome.min.css" rel="stylesheet">
+    <body>
 
-            <script src = '/widgets/kbwidget.js'></script>
-            <script src = '/widgets/kbaseButtonControls.js'></script>
-            <script src = '/widgets/kbaseBox.js'></script>
-            <script src = '/widgets/kbasePrompt.js'></script>
-            <script src = '/widgets/kbaseDeletePrompt.js'></script>
-            <script src = '/widgets/kbaseErrorPrompt.js'></script>
-            <script src = '/widgets/kbaseAccordion.js'></script>
-            <script src = '/widgets/kbaseTabs.js'></script>
-            <script src = '/widgets/kbaseTable.js'></script>
-            <script src = '/widgets/kbaseDataBrowser.js'></script>
-            <script src = '/widgets/kbaseFormBuilder.js'></script>
+        <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation" >
+          <!-- Brand and toggle get grouped for better mobile display -->
+          <div class="navbar-header">
+            <a class="navbar-brand" href="/"><img src = '/img/ware_logo.png' height = '30'></a>
+          </div>
 
-            <title>[% title OR "WareLab Pubs" %]</title>
-        </head>
+          <!-- Collect the nav links, forms, and other content for toggling -->
+          <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+              <li><a href="#">Home</a></li>
+              <li><a href="#">About</a></li>
+              <li><a href="#">Contact</a></li>
+            </ul>
+           <p class="navbar-text pull-right">Logged in as <a href="#" class="navbar-link">username</a></p>
+          </div><!-- /.navbar-collapse -->
+        </nav>
 
-        <style>
-            body { padding-top: 70px; }
-        </style>
-
-        <body>
-
-            <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation" >
-              <!-- Brand and toggle get grouped for better mobile display -->
-              <div class="navbar-header">
-                <a class="navbar-brand" href="/">WARE<!--<img src = '/img/warelogo.png' height = '30'>--></a>
-              </div>
-
-              <!-- Collect the nav links, forms, and other content for toggling -->
-              <div class="collapse navbar-collapse navbar-ex1-collapse">
-                <ul class="nav navbar-nav">
-                  <li><a href="#">Home</a></li>
-                  <li><a href="#">About</a></li>
-                  <li><a href="#">Contact</a></li>
-                </ul>
-               <p class="navbar-text pull-right">Logged in as <a href="#" class="navbar-link">username</a></p>
-              </div><!-- /.navbar-collapse -->
-            </nav>
-
-            <div class="container">
-              <div class="row">
-                <div class="col-lg-2">
-                  <div class="well sidebar-nav">
-                    <ul class="nav nav-list">
-                      <li class="nav-header">Actions</li>
-                      <li><a href="[% c.url_for('/') %]">Home</a></li>
-                      [% IF c.req.url.path.to_abs_string.match('^/pubs/') %]
-                        <li class="active"><a href="[% c.url_for('/pubs/list') %]">Pubs</a></li>
-                        <ul>
-                          <li><a href="[% c.url_for('/pub/create_form') %]">Create</a></li>
-                        </ul>
-                      [% ELSE %]
-                        <li><a href="[% c.url_for('/pubs/list') %]">Pubs</a></li>
-                      [% END %]
-
-                      [% IF c.req.url.path.to_abs_string.match('^/agencies/') %]
-                        <li class="active"><a href="[% c.url_for('/agencies/list') %]">Agencies</a></li>
-                        <ul>
-                          <li><a href="[% c.url_for('/agency/create_form') %]">Create</a></li>
-                        </ul>
-                      [% ELSE %]
-                        <li><a href="[% c.url_for('/agencies/list') %]">Agencies</a></li>
-                      [% END %]
-
-                      [% IF c.req.url.path.to_abs_string.match('^/funding/') %]
-                        <li class="active"><a href="[% c.url_for('/funding/list') %]">Funds</a></li>
-                        <ul>
-                          <li><a href="[% c.url_for('/funding/create_form') %]">Create</a></li>
-                        </ul>
-                      [% ELSE %]
-                        <li><a href="[% c.url_for('/funding/list') %]">Funds</a></li>
-                      [% END %]
+        <div class="container">
+          <div class="row">
+            <div class="col-lg-2">
+              <div class="well sidebar-nav">
+                <ul class="nav nav-list">
+                  <li class="nav-header">Actions</li>
+                  <li><a href="[% c.url_for('/') %]">Home</a></li>
+                  [% IF c.req.url.path.to_abs_string.match('^/pub/') %]
+                    <li class="active"><a href="[% c.url_for('pub-list') %]">Pubs</a></li>
+                    <ul>
+                      <li><a href="[% c.url_for('/pub/create_form') %]">Create</a></li>
                     </ul>
-                  </div><!--/.well -->
-                </div><!--/span-->
-                <div class="col-lg-10">
-                  <span class="message">[% status_msg %]</span>
-                  <span class="error">[% error_msg %]</span>
-                  [% content %]
-                </div>
-              </div>
+                  [% ELSE %]
+                    <li><a href="[% c.url_for('pub-list') %]">Pubs</a></li>
+                  [% END %]
+
+                  [% IF c.req.url.path.to_abs_string.match('^/agency/') %]
+                    <li class="active"><a href="[% c.url_for('/agency/list') %]">Agencies</a></li>
+                    <ul>
+                      <li><a href="[% c.url_for('/agency/create_form') %]">Create</a></li>
+                    </ul>
+                  [% ELSE %]
+                    <li><a href="[% c.url_for('/agency/list') %]">Agencies</a></li>
+                  [% END %]
+
+                  [% IF c.req.url.path.to_abs_string.match('^/funding/') %]
+                    <li class="active"><a href="[% c.url_for('/funding/list') %]">Funds</a></li>
+                    <ul>
+                      <li><a href="[% c.url_for('/funding/create_form') %]">Create</a></li>
+                    </ul>
+                  [% ELSE %]
+                    <li><a href="[% c.url_for('/funding/list') %]">Funds</a></li>
+                  [% END %]
+                </ul>
+              </div><!--/.well -->
+            </div><!--/span-->
+            <div class="col-lg-10">
+              <span class="message">[% status_msg %]</span>
+              <span class="error">[% error_msg %]</span>
+              [% content %]
             </div>
+          </div>
+        </div>
 
-            <div class="row-fluid">
-              <div class="span12 text-center">&copy; Ware Lab CSHL 2013</span>
-            </div>
-
-        </body>
-
-    </html>
-[% END %]
+        <div class="row-fluid">
+          <div class="span12 text-center">&copy; Ware Lab CSHL 2013</span>
+        </div>
+    </body>
+</html>

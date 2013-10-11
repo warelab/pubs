@@ -1,0 +1,63 @@
+<script>
+  function confirm_delete(funding_id) {
+    var url = "[% c.url_for('/funding/delete') %]/" + funding_id;
+    if ( confirm('ok to delete? ' + url) ) {
+      $.post("[% c.url_for('/funding/delete') %]/" + funding_id);
+      location.reload();
+    }
+  }
+</script>
+
+<h1>Fundings ([% fundings.count OR '0' %])</h1>
+
+<a class="btn" href="[% c.url_for('funding-create_form', { agency_id => agency_id || '' }) %]">Create Fund</a><br/>
+
+[% UNLESS agency_id %]
+  <form>
+    <select id="agency_id" name="agency_id" onchange="javascript:$('#filter-form').submit()">
+      <option value="0">--restrict by agency--</option>
+      [% FOREACH agency IN agencies %]
+      <option value="[% agency.id %]"[% IF c.param('agency_id') == agency.id; ' selected'; END %]>[% agency.agency_name %]</option>
+      [% END %]
+    </select>
+  </form>
+[% END %]
+
+[% IF fundings.count > 0 %]
+<div style="text-align:center" class="well">
+  Found [% fundings.count %] funds. <a class="btn" href="[% c.url_for('/funding/list_service' { filter => c.req.param('filter'), format => 'csv' } ) %]">Download</a>
+</div>
+
+  <table class="table table-striped table-bordered table-hover">
+    <thead>
+    <tr>
+      <th>Agency</th>
+      <th>Award Title</th>
+      <th>Award Number</th>
+      <th>Abstract</th>
+      <th>&nbsp;</th>
+    </tr>
+    </thead>
+    <tbody>
+    [% WHILE ( funding = fundings.next ) %]
+      <tr>
+        <td><a href="[% c.url_for('agency-view', 'agency_id', funding.agency_id) %]">[% funding.agency.agency_name %]</a></td>
+        <td><a href="[% c.url_for('funding-view', 'funding_id', funding.funding_id) %]">[% funding.title OR 'NA' %]</a></td>
+        <td>[% funding.award_number OR 'NA' %]</td>
+        <td>[% funding.abstract | truncate(40) %]</td>
+        <td>
+        <div class="text-center">
+          <a class="btn btn-default" href="[% c.url_for('funding-edit_form', 'funding_id', funding.funding_id) %]">Edit</a>
+          <button class="btn btn-danger" id="delete-funding" onclick="javascript:confirm_delete('[% funding.id %]')">Delete</a>
+        </div>
+
+        </td>
+      </tr>
+    [% END %]
+    </tbody>
+  </table>
+[% ELSE %]
+  <div class="well text-center">
+  No funding.
+  </div>
+[% END %]

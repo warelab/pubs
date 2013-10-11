@@ -1,9 +1,5 @@
 name: "Ware Labs Publications"
 
-default_view: HTML
-
-jsonp: 1
-
 connect_info:
     dsn: "dbi:mysql:warepubs"
     host: "localhost"

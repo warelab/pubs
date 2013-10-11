@@ -7,31 +7,32 @@ use JSON;
 use String::Trim 'trim';
 
 # ----------------------------------------------------------------------  
-sub list {
-    my $self = shift;
-
-    my $funding = $self->schema->resultset('Funding')->search(
-      undef,
-      {
-        result_class => 'DBIx::Class::ResultClass::HashRefInflator',
-      },
-    );
-
-    $self->respond_to(
-        json => { json => [$funding->all] },
-        txt  => { text => Dumper([$funding->all]) },
-        html => sub {
-            $self->render(
-                agency_id => $self->param('agency_id'),
-                fundings => $funding,
-            )
-        }
-    );
-}
+#sub list {
+#    my $self = shift;
+#
+#    my $funding = $self->schema->resultset('Funding')->search(
+#      undef,
+#      {
+#        result_class => 'DBIx::Class::ResultClass::HashRefInflator',
+#      },
+#    );
+#
+#    $self->respond_to(
+#        json => { json => [$funding->all] },
+#        txt  => { text => Dumper([$funding->all]) },
+#        html => sub {
+#            $self->render(
+#                agency_id => $self->param('agency_id'),
+#                fundings => $funding,
+#            )
+#        }
+#    );
+#}
 
 # ----------------------------------------------------------------------  
-sub list_service {
-    my $self = shift;
+sub list {
+    my $self       = shift;
+    my $agency_id  = $self->param('agency_id')  || 0;;
     my $order_by   = $self->param('order_by')   || 'title';
     my $sort_order = $self->param('sort_order') || 'asc';
 
@@ -47,7 +48,6 @@ sub list_service {
         }
     }
 
-    my $agency_id = $self->param('agency_id');
     if ( $agency_id && $agency_id =~ /^\d+$/ ) {
         push @$search_params, { agency_id => $agency_id };
     }
@@ -57,29 +57,36 @@ sub list_service {
         { order_by => { '-' . $sort_order => $order_by } }
     );
 
-print STDERR "AID ", $agency_id, "\n";
     $self->respond_to(
-        html => sub {
-            $self->stash('layout', undef);
+        frag => sub {
+            $self->stash( layout => undef );
             $self->render(
                 agency_id  => $agency_id,
                 agencies   => [ $self->schema->resultset('Agency')->all ],
                 fundings   => $fundings,
             )
         },
+        html => sub { $self->render() },
+#            $self->stash('layout', undef);
+#            $self->render(
+#                agency_id  => $agency_id,
+#                agencies   => [ $self->schema->resultset('Agency')->all ],
+#                fundings   => $fundings,
+#            )
+#        },
 
-        csv => sub {
+        tab => sub {
             my @cols  = @{ 
                 $self->stash('config')->{'download_fields'}{'funding'} || [] 
             };
 
-            my @funds = ([ @cols ]);
+            my @funds = join "\t", @cols;
 
             while ( my $fund = $fundings->next ) {
-                push @funds, [ map { $fund->get_column($_) } @cols ];
+                push @funds, join ("\t", map { $fund->get_column($_) } @cols );
             }
 
-            $self->render(text => \@funds)
+            $self->render( text => join "\n", @funds );
         },
 
         json => sub {
@@ -87,7 +94,8 @@ print STDERR "AID ", $agency_id, "\n";
             while ( my $fund = $fundings->next ) {
                 push @funds, { $fund->get_inflated_columns };
             }
-            $self->render(json => [\@funds]);
+
+            $self->render( json => \@funds );
         },
     );
 }

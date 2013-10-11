@@ -4,7 +4,7 @@
 
 You can:
 <ul>
-  <li><a href="[% c.url_for('/pub/list') %]">List Pubs</a> ([% pubs.size OR '0' %])</li>
-  <li><a href="[% c.url_for('/agency/list') %]">List Agencies</a> ([% agencies.size OR '0' %])</li>
-  <li><a href="[% c.url_for('/funding/list') %]">List Fundings</a> ([% fundings.size OR '0' %])</li>
+  <li><a href="[% c.url_for('pub-list') %]">List Pubs</a> ([% pubs.size OR '0' %])</li>
+  <li><a href="[% c.url_for('agency-list') %]">List Agencies</a> ([% agencies.size OR '0' %])</li>
+  <li><a href="[% c.url_for('funding-list') %]">List Fundings</a> ([% fundings.size OR '0' %])</li>
 </ul>

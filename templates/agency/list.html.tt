@@ -1,28 +1,153 @@
-[% title = 'Agencies' %]
-
 <script>
-  $(document).ready(function() {
-    $('#filter-form').submit(function(e) {
-        e.preventDefault();
-        var url = "[% c.url_for('/agencies/list_service' ) %]?filter=" + $('#filter').val();
-        console.log(url);
-        $.get(url, function(html) {
-            $('#agencies').html(html);
-        });
-    });
+    $(function() {
 
-    $('#filter').keyup(function(event) { $('#filter-form').submit() });
-    $('#filter').focus();
-    $('#filter-form').submit();
-  });
+        var $kbtable;
+
+        $('#dlbutton').on(
+            'click',
+            function (e) {
+                e.preventDefault(); e.stopPropagation();
+                location.href = '/agency/list.tab?download&filter=' + $('#filterbox').val();
+            }
+        );
+
+        $('#filterbox').on(
+            'keyup',
+            function (e) {
+                e.preventDefault(); e.stopPropagation();
+
+                if (e.metaKey || e.altKey || e.ctrlKey) {
+                    return;
+                }
+
+                var value = $('#filterbox').val();
+
+                if (e.keyCode == 27) {
+                    value = $('#filterbox').val(undefined);
+                }
+
+                if (value.length) {
+                    $('#filtericon').removeClass('icon-search');
+                    $('#filtericon').addClass('icon-remove');
+                }
+                else {
+                    $('#filtericon').addClass('icon-search');
+                    $('#filtericon').removeClass('icon-remove');
+                }
+
+
+                if ($kbtable) {
+                    $kbtable.refilter(value.length > 2 ? value : undefined);
+                }
+            }
+        );
+
+        $('#filterbutton').on(
+            'click',
+            function (e) {
+                e.preventDefault(); e.stopPropagation();
+
+                if ($('#filtericon').hasClass('icon-remove')) {
+                    $('#filterbox').val(undefined);
+                    $('#filterbox').trigger('keyup');
+                }
+            }
+        );
+
+        $.ajax({
+            url: "[% c.url_for('/agency/list.json') %]",
+            dataType: "json",
+            type: 'GET',
+            success: function (data, status, xhr) {
+
+                $kbtable = $('#table').kbaseTable(
+                    {
+                        sortable : true,
+                        headerOptions : {
+                            style : 'width : 22%'
+                        },
+                        row_callback : function (cell, header, row, $kbtable) {
+
+                            if (header == 'agency_name' || header == 'url_tempalte') {
+                                return cell.length > 40
+                                    ? cell.substring(0,40) + '...'
+                                    : cell || '&nbsp;'
+                            }
+                            else if (header == 'func') {
+                                var $buttons = $.jqElem('span')
+                                    .append(
+                                        $.jqElem('button')
+                                            .append('View')
+                                            .addClass('btn btn-xs btn-default')
+                                            .on(
+                                                'click',
+                                                function(e) {
+
+                                                }
+                                            )
+
+                                    )
+                                    .append(
+                                        $.jqElem('button')
+                                            .append('Delete')
+                                            .addClass('btn btn-xs btn-danger')
+                                    );
+                                return $buttons.html();
+                            }
+                            else {
+                                return cell || '&nbsp;';
+                            }
+                        },
+                        structure : {
+                            header : [
+                                {value : 'agency_name', label: 'Agency Name'},
+                                {value: 'url_template', label: 'URL Template'},
+                                { value : 'func', label : '&nbsp;', sortable : false, style : 'width : 10%'},
+                            ],
+                            rows : data
+                        }
+                    }
+                );
+
+                $('#agencies_count_well').show();
+                $('#agencies_count').kb_bind($kbtable, 'numRows');
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                $('#table').text(xhr.responseTest);
+            }
+
+        });
+
+    });
 </script>
 
-[% PROCESS 'filter-form.tt' %]
-
-<div id="agencies">
-  <div style="text-align:center" class="well">
-  Retrieving agencies...<br/>
-  <i class = 'icon-spinner icon-spin icon-4x'></i>
-  </div>
+<div class = 'container'>
+<div class = 'row'>
+    <div class = 'col-lg-2'>
+        <h1>Agencies</h1>
+    </div>
+    <div class = 'col-lg-offset-7 col-lg-3'>
+        <div class="input-group">
+            <input type="text" class="form-control" id = 'filterbox'>
+            <span class="input-group-btn">
+                <button class="btn btn-default" type="button" id = 'filterbutton'><i class = 'icon-search' id = 'filtericon'></i></button>
+            </span>
+        </div>
+    </div>
 </div>
 
+<div class = 'row' id = 'agencies_count_well' style = 'display : none'>
+    <div class = 'col-lg-12 well' style = 'text-align : center'>
+        Found <span id = 'agencies_count'></span> agencies
+        <button class = 'btn btn-default btn-xs' id = 'dlbutton'>Download</button>
+    </div>
+</div>
+
+<div class = 'row'>
+    <div class = 'col-lg-12' id = 'table'>
+        <div style = 'text-align : center'>
+            <i class = 'icon-spinner icon-spin icon-4x'></i>
+        </div>
+    </div>
+</div>
+</div>

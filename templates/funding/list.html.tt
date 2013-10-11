@@ -2,7 +2,7 @@
   $(document).ready(function() {
     $('#filter-form').submit(function(e) {
         e.preventDefault();
-        var url = "[% c.url_for('/funding/list_service') %]?filter=" +  $('#filter').val() + '&agency_id=' + $('#agency_id').val();
+        var url = "[% c.url_for('/funding/list.frag') %]?filter=" +  $('#filter').val() + '&agency_id=' + $('#agency_id').val();
         $.get(url, function(html) {
             $('#fundings').html(html);
         });

@@ -36,63 +36,63 @@ sub startup {
 
     $r->get('/pub/list')->name('pub-list')->to(
         controller => 'pub',
-        action => 'list',
-        format => 'html',
+        action     => 'list',
+        format     => 'html',
     );
 
-    $r->get('/agency/list')->to(
+    $r->get('/agency/list')->name('agency-list')->to(
         controller => 'agency',
-        action => 'list',
-        format => 'html',
+        action     => 'list',
+        format     => 'html',
     );
 
     $r->get('/agency/view/:agency_id')->name('agency-view')->to(
         controller => 'agency',
-        action => 'view',
+        action     => 'view',
+    );
+
+#    $r->get('/agency/list_service')->to(
+#        controller => 'agency',
+#        action     => 'list_service',
+#        format     => 'html',
+#    );
+
+    $r->get('/funding/list/:agency_id')->to(
+        controller => 'funding',
+        action     => 'list',
+        format     => 'html',
+        agency_id  => '',
     );
 
     $r->get('/funding/view/:funding')->name('funding-view')->to(
         controller => 'funding',
-        action => 'view',
+        action     => 'view',
     );
 
-    $r->get('/agency/list_service')->to(
-        controller => 'agency',
-        action => 'list_service',
-        format => 'html',
-    );
-
-    $r->get('/funding/list/:agency_id')->to(
+    $r->get('/funding/create_form/:agency_id')->name('funding-create-form')->to(
         controller => 'funding',
-        action => 'list',
-        format => 'html',
-        agency_id => '',
+        action     => 'create_form',
+        agency_id  => '',
     );
 
-    $r->get('/funding/create_form/:agency_id')->name('funding-create_form')->to(
+    $r->get('/funding/edit_form/:funding_id')->name('funding-edit-form')->to(
         controller => 'funding',
-        action => 'create_form',
-        agency_id => '',
-    );
-
-    $r->get('/funding/edit_form/:funding_id')->name('funding-edit_form')->to(
-        controller => 'funding',
-        action => 'edit_form',
+        action     => 'edit_form',
     );
 
     $r->post('/funding/create')->to(
         controller => 'funding',
-        action => 'create',
+        action     => 'create',
     );
 
-    $r->get('/funding/list_service/:agency_id')
-      ->name('funding-list_service')
-      ->to(
-        controller => 'funding',
-        action => 'list_service',
-        format => 'html',
-        agency_id => '',
-    );
+#    $r->get('/funding/list_service/:agency_id')
+#      ->name('funding-list_service')
+#      ->to(
+#        controller => 'funding',
+#        action     => 'list_service',
+#        format     => 'html',
+#        agency_id  => '',
+#    );
 
 }
 
