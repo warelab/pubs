@@ -1,0 +1,4 @@
+[% foo = 'this is a test' %][% marco = 'polo' %]
+([% c.render('main/test', 'partial', 1) %])
+
+{{[% INCLUDE 'main/test.html.tt' %]}}

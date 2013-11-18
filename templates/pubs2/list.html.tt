@@ -1,0 +1,78 @@
+[% BLOCK row_callback %]
+    function (cell, header, row, $kbtable) {
+
+        if (header == 'doc_115') {
+            return cell != undefined && cell.length
+                ? '&#10004;'
+                : '&nbsp;';
+        }
+        else if (header == 'authors') {
+
+            if (cell.length) {
+                var authors = cell.split(',');
+                if (authors.length > 5) {
+                    var visible = authors.splice(0,5);
+                }
+                else {
+                    visible = authors;
+                    authors = [];
+                }
+
+                cell = $.jqElem('span').html(visible.join('<br>'));
+
+                if (authors.length) {
+                    cell.append($.jqElem('br'))
+                    .append(
+                        $.jqElem('a')
+                            .append('et. al.')
+                            .on('click',
+                                function(e) {
+                                    console.log(e.target);
+                                    var $target = $(e.target);
+                                    var $container = $target.parent();
+                                    $(e.target).remove();
+                                    $container.append(
+                                        $.jqElem('span').html(authors.join('<br>'))
+                                    );
+                                }
+                            )
+                    );
+                }
+            }
+
+            return cell;
+
+        }
+
+        return undefined;
+    }
+[% END %]
+
+[% BLOCK header %]
+    [
+        { value : 'func', label : '&nbsp;', sortable : false, style : 'min-width : 35px'},
+        {value : 'year', style : 'min-width : 75px'},
+        'title',
+        'journal',
+        { value : 'authors', style : 'min-width : 120px'},
+        {
+            value : 'doc_115',
+            label : '115',
+            style : 'min-width : 65px',
+        }
+    ]
+[% END %]
+
+[% rc = PROCESS row_callback %]
+[% r = c.stash('row_callback', rc) %]
+
+[% hd = PROCESS header %]
+[% r = c.stash('header', hd) %]
+
+[% r = c.stash('page_title', 'Publications list') %]
+
+[% r = c.stash('view_header', 'title') %]
+[% r = c.stash('primary_key', 'pub_id') %]
+
+[% c.render(c.stash('default_template'), 'partial', 1) %]
+

@@ -1,0 +1,33 @@
+[% BLOCK row_callback %]
+    function (cell, header, row, $kbtable) {
+
+        if (header == 'abstract') {
+            return truncate_field(cell, 200);
+        }
+
+        return undefined;
+    }
+[% END %]
+
+[% BLOCK header %]
+    [
+        {value : 'func', label : '&nbsp;', sortable : false, style : 'min-width : 35px'},
+        {value : 'agency_name', label : 'Agency name'},
+        {value : 'url_template', label : 'URL Template'},
+    ]
+[% END %]
+
+[% rc = PROCESS row_callback %]
+[% r = c.stash('row_callback', rc) %]
+
+[% hd = PROCESS header %]
+[% r = c.stash('header', hd) %]
+
+[% r = c.stash('page_title', 'Agencies list') %]
+
+[% r = c.stash('view_header', 'agency_name') %]
+[% r = c.stash('primary_key', 'agency_id') %]
+
+[% t = c.stash('title', 'Agencies') %]
+
+[% c.render(c.stash('default_template'), 'partial', 1) %]

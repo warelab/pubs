@@ -1,0 +1,31 @@
+[%-
+
+    IF c.stash('columns') == undef;
+        res = c.stash('columns', c.stash('data_rs').0.columns().sort());
+    END;
+
+    column_labels_map = {
+        'agency_name'   = 'Agency Name',
+        'url_template' = 'URL Template',
+    };
+
+    column_labels = [];
+    keeper_columns = [];
+    FOR col IN c.stash('columns');
+        IF column_labels_map.$col;
+            column_labels.push(column_labels_map.$col);
+            keeper_columns.push(col);
+        END;
+    END;
+
+    kc = c.stash('columns', keeper_columns);
+
+    FOR row IN c.stash('data_rs');
+        IF (row.doc_115.length);
+            row.doc_115 = "YES";
+        END;
+    END;
+
+    c.render(c.stash('default_template'), 'partial', 1)
+
+-%]

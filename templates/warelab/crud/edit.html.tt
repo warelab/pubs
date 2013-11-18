@@ -1,0 +1,110 @@
+[% USE JSON.Escape( pretty => 1 ) %]
+
+[%
+    col_info = c.stash('source').columns_info;
+    form_elements = [];
+    FOR col = c.stash('source').columns.sort();
+        info = col_info.$col;
+        type = info.data_type;
+        validate = {};
+        IF type == 'tinyint';
+            type = 'checkbox';
+        ELSIF type == 'integer';
+            validate = {
+                regex => "^\\d*\$",
+                msg => 'Must be an integer'
+            };
+        ELSIF type == 'text';
+            type = 'textarea';
+        ELSE;
+            type = 'text';
+        END;
+
+        form_elements.push(
+            {
+                key => col,
+                validate => validate,
+                type => type,
+            }
+        );
+    END;
+%]
+
+[%- BLOCK content -%]
+<div class = 'row'>
+    <div class = 'col-lg-12' id = 'form'>
+        <div style = 'text-align : center'>
+            <i class = 'icon-spinner icon-spin icon-4x'></i>
+        </div>
+    </div>
+</div>
+[%- END -%]
+[%-
+    content = PROCESS content;
+    content = content.replace("\n", "\\\n");
+    content = content.replace('"', '\\"');
+-%]
+
+<script>
+
+    $(function() {
+
+        var $content = $("[% content %]");
+        var elems = scrubAndAppend($content);
+
+        var json_href = location.href;
+        json_href = json_href.replace(/\.html.*/, '.json');
+
+        var view_href = json_href.replace(/\/edit\//, '/view/');
+
+        var save_href = location.href;
+        save_href = save_href.replace(/\/edit\//, '/save/');
+
+        $.ajax({
+            url: view_href,
+            dataType: "json",
+            type: 'GET',
+            success: function (data, status, xhr) {
+                console.log(data);
+                console.log(Object.keys(data).sort());
+
+                var elements = [];
+                var element_keys = Object.keys(data).sort();
+
+                for (var idx = 0; idx < element_keys.length; idx++) {
+                    key = element_keys[idx];
+
+                    elements.push(
+                        {
+                            key : key,
+                        }
+                    );
+                }
+
+                elems['form'].kbaseFormBuilder(
+                    {
+                        elements : [% JSON.Escape.json_encode(form_elements) %],
+                        values : data,
+                        canSubmit : true,
+                        canReset: true,
+                        submitButton : 'Save',
+                        action : save_href,
+                        method : 'POST',
+                        submitCallback : function (e, $form, $fb) {
+                        console.log("SUB CALLBACK");
+                        console.log($fb);
+                            console.log($fb.getFormValuesAsObject());
+                            return true;
+                        }
+                    }
+                );
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                elems['form'].text(xhr.responseTest);
+            }
+
+        });
+
+    });
+
+</script>

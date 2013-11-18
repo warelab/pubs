@@ -1,0 +1,22 @@
+[% BLOCK success_callback %]
+    elems['title'].text(data.title);
+    delete_title = data.title;
+[% END %]
+
+[% BLOCK keys %]
+    [
+        'title',
+        'agency_id',
+        {value : 'award_number', label : 'Award Number'},
+        'abstract',
+    ]
+[% END %]
+
+
+[% sc = PROCESS success_callback %]
+[% r = c.stash('success_callback', sc) %]
+
+[% keys = PROCESS keys %]
+[% r = c.stash('keys', keys) %]
+
+[% c.render(c.stash('default_template'), 'partial', 1) %]

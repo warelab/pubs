@@ -1,0 +1,22 @@
+[%-
+    IF c.stash('columns') == undef;
+        res = c.stash('columns', c.stash('data_rs').0.columns().sort());
+    END;
+-%]
+
+[%- IF column_labels == undef;
+    column_labels = c.stash('columns');
+END -%]
+
+[%- column_labels.join("\t") %]
+[%
+    FOR elem = c.stash('data_rs');
+        row = [];
+        FOR col = c.stash('columns');
+            row.push(elem.$col);
+        END;
+        r = row.join("\t");
+        r = r.replace("\r?\n", " ");
+        r _ "\n";
+    END
+-%]

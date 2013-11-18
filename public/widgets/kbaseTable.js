@@ -82,8 +82,27 @@
                 }
             },
 
-            row_callback : function (cell) {
-                return cell;
+            row_callback : function (cell, header, row, $kb) {
+                return $kb.default_row_callback(cell);
+            }
+        },
+
+        default_row_callback : function (cell) {
+
+            if (cell.label != undefined) {
+                return cell.label;
+            }
+            else {
+                value = typeof cell == 'string'
+                    ? cell
+                    : cell.value;
+
+                if (cell.type == 'th') {
+                    value = value.replace(/(?:^|\s+)([a-z])/g, function(v) { return v.toUpperCase(); });
+                    value += ' : ';
+                }
+
+                return value;
             }
         },
 
@@ -144,6 +163,7 @@
                         }
 
                         var callback = header.callback || this.options.header_callback;
+
                         var label = callback(header, this);
                         var h = header.value;
 
@@ -301,17 +321,42 @@
 
             var numRows = 0;
 
-            for (var idx = 0; idx < rows.length; idx++) {
-                var $row = this.createRow(rows[idx], header);
-                if ($row != undefined) {
-                    numRows++;
-                    this.data('tbody').append($row);
+            if ($.isArray(rows)) {
+                for (var idx = 0; idx < rows.length; idx++) {
+                    var $row = this.createRow(rows[idx], header);
+                    if ($row != undefined && $row.children().length) {
+                        numRows++;
+                        this.data('tbody').append($row);
+                    }
                 }
+            }
+            else if (this.options.structure.keys != undefined) {
+                for (var idx = 0; idx < this.options.structure.keys.length; idx++) {
+                    var key = this.options.structure.keys[idx];
 
+                    if (typeof key == 'string') {
+                        key = { value : key };
+                    }
+
+                    key.type = 'th';
+                    key.style = 'white-space : nowrap';
+
+                    var $row = this.createRow(
+                        {
+                            key : key,
+                            value : {value : rows[key.value], key : key.value},
+                        },
+                        [{value : 'key'}, {value : 'value'}]
+                    );
+
+                    if ($row != undefined && $row.children().length) {
+                        numRows++;
+                        this.data('tbody').append($row);
+                    }
+                }
             }
 
             this.numRows(numRows);
-            console.log(this.numRows());
         },
 
         addOptions : function ($cell, options) {
@@ -361,40 +406,62 @@
 
             var $tr = $.jqElem('tr');
 
+            var callback = this.options.row_callback;
+
+            var filterString = '';
+
             if ( $.isArray(rowData) ) {
 
                 $.each(
                     rowData,
-                    $.proxy( function(idx, row) {
+                    $.proxy( function(idx, cell) {
 
-                        var value = typeof row == 'string' || typeof row == 'number'
-                            ? row
-                            : row.value;
+                        var value = typeof cell == 'object'
+                            ? cell.value
+                            : cell;
+
+                        if (value == undefined) {
+                            return;
+                        }
+
+                        filterString += value;
 
                         var $td = $.jqElem('td').append(value);
 
-                        if (typeof row != 'string' && typeof row != 'number') {
-                            this.addOptions($td, row);
+                        if (typeof cell == 'object') {
+
+                            this.addOptions($td, cell);
                         }
 
-                        if (value != undefined) {
-                            $tr.append($td);
-                        }
+                        $tr.append($td);
 
                     }, this)
                 );
             }
-            else {
-
-                var callback = this.options.row_callback;
-                var filterString = '';
+            else if (headers != undefined && headers.length) {
 
                 $.each(
                     headers,
                     $.proxy(function (hidx, header) {
                         var h = header.value;
 
-                        var $td = $('<td></td>');
+                        var type = 'td';
+
+                        // null is an irritating special case. Because it's not defined,
+                        // but it is a type of object. frick.
+
+                        if (rowData[h] == null) {
+                            rowData[h] = undefined;
+                        }
+                        if (typeof rowData[h] == 'object' && rowData[h].value == null) {
+                            rowData[h].value = '';
+                        }
+
+                        if (typeof rowData[h] == 'object' && rowData[h].type != undefined) {
+                            type = rowData[h].type;
+                        }
+
+                        var $td = $.jqElem(type);
 
                         var label = callback(rowData[h], h, rowData, this);
                         filterString += rowData[h];

@@ -9,6 +9,7 @@
         <link href="/ext/font-awesome/3.2.1/css/font-awesome.min.css" rel="stylesheet">
         <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
 
+        <script src = '/gramene.js'></script>
         <script src = '/widgets/kbwidget.js'></script>
         <script src = '/widgets/kbaseButtonControls.js'></script>
         <script src = '/widgets/kbaseBox.js'></script>
@@ -21,7 +22,7 @@
         <script src = '/widgets/kbaseDataBrowser.js'></script>
         <script src = '/widgets/kbaseFormBuilder.js'></script>
 
-        <title>[% title OR "WareLab Pubs" %]</title>
+        <title>[% c.stash('page_title') OR "WareLab Pubs" %]</title>
     </head>
 
     <style>
@@ -39,9 +40,9 @@
           <!-- Collect the nav links, forms, and other content for toggling -->
           <div class="collapse navbar-collapse navbar-ex1-collapse">
             <ul class="nav navbar-nav">
-              <li><a href="#">Home</a></li>
-              <li><a href="#">About</a></li>
-              <li><a href="#">Contact</a></li>
+              <li><a href="/">Home</a></li>
+              <li><a href="/about">About</a></li>
+              <li><a href="/contact">Contact</a></li>
             </ul>
            <p class="navbar-text pull-right">Logged in as <a href="#" class="navbar-link">username</a></p>
           </div><!-- /.navbar-collapse -->
@@ -49,41 +50,18 @@
 
         <div class="container">
           <div class="row">
-            <div class="col-lg-2">
+            <div class="col-md-2">
               <div class="well sidebar-nav">
                 <ul class="nav nav-list">
-                  <li class="nav-header">Actions</li>
+                  <li class="nav-header">Navigation</li>
                   <li><a href="[% c.url_for('/') %]">Home</a></li>
-                  [% IF c.req.url.path.to_abs_string.match('^/pub/') %]
-                    <li class="active"><a href="[% c.url_for('pub-list') %]">Pubs</a></li>
-                    <ul>
-                      <li><a href="[% c.url_for('/pub/create_form') %]">Create</a></li>
-                    </ul>
-                  [% ELSE %]
-                    <li><a href="[% c.url_for('pub-list') %]">Pubs</a></li>
-                  [% END %]
-
-                  [% IF c.req.url.path.to_abs_string.match('^/agency/') %]
-                    <li class="active"><a href="[% c.url_for('/agency/list') %]">Agencies</a></li>
-                    <ul>
-                      <li><a href="[% c.url_for('/agency/create_form') %]">Create</a></li>
-                    </ul>
-                  [% ELSE %]
-                    <li><a href="[% c.url_for('/agency/list') %]">Agencies</a></li>
-                  [% END %]
-
-                  [% IF c.req.url.path.to_abs_string.match('^/funding/') %]
-                    <li class="active"><a href="[% c.url_for('/funding/list') %]">Funds</a></li>
-                    <ul>
-                      <li><a href="[% c.url_for('/funding/create_form') %]">Create</a></li>
-                    </ul>
-                  [% ELSE %]
-                    <li><a href="[% c.url_for('/funding/list') %]">Funds</a></li>
-                  [% END %]
+                    <li><a href="[% c.crud_url('pub', {action => 'list', format => 'html'}) %]">Pubs</a></li>
+                    <li><a href="[% c.crud_url('agency', {action => 'list', format => 'html'}) %]">Agencies</a></li>
+                    <li><a href="[% c.crud_url('funding', {action => 'list', format => 'html'}) %]">Funds</a></li>
                 </ul>
               </div><!--/.well -->
             </div><!--/span-->
-            <div class="col-lg-10">
+            <div class="col-md-10">
               <span class="message">[% status_msg %]</span>
               <span class="error">[% error_msg %]</span>
               [% content %]

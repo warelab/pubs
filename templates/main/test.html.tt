@@ -1,0 +1,13 @@
+<div id = 'xyz'>XYZ</div>
+<script>
+var scripts = $('script');
+var current = scripts[scripts.length - 1];
+console.log(current);
+console.log(scripts);
+    $(current).after("<div id = 'before'>BEFORE DIV</div>");
+//    b.remove();
+</script>
+<div id = 'xyz'>def</div>
+<script>
+    document.writeln("<div id = 'bananas'>bananas</div>");
+</script>

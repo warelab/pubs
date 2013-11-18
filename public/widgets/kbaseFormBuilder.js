@@ -147,13 +147,14 @@
             },
 
             canSubmit : false,
-            submitButton : 'Reset',
+            resetButton : 'Reset',
             submitButton : 'Submit',
 
         },
 
         init: function(options) {
             this._super(options);
+            this.$elem.empty();
             this.$elem.append(this._buildForm(this.options.elements));
             return this;
         },
@@ -429,7 +430,7 @@
             }
 
             if (this.options.submitCallback) {
-                $form.on('submit', $.proxy(function (e) { this.options.submitCallback(e, $form, this) }, this) );
+                $form.on('submit', $.proxy(function (e) { return this.options.submitCallback(e, $form, this) }, this) );
             }
 
             this.data('form', $form);
@@ -715,6 +716,12 @@
 
         buildValidationRegexFunction : function(key, regex, msg) {
             var $fb = this;
+
+            if (typeof regex == 'string') {
+                regex = new RegExp(regex);
+
+            }
+
             return function (key, $fb) {
 
                 var ret = true;
@@ -805,7 +812,7 @@
                     .attr('value', data.value);
             ;
 
-            if (data.checked) {
+            if (data.checked == true) {
                 $checkbox.prop('checked', true);
             }
 

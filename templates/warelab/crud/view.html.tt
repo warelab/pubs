@@ -1,0 +1,152 @@
+[% USE JSON.Escape( pretty => 1 ) %]
+
+[%- BLOCK content -%]
+<div class = 'row'>
+    <div class = 'row'>
+        <div class = 'col-md-12'>
+            <h1 id = 'title'>[% c.stash('title') || 'Record' %]</h1>
+        </div>
+    </div>
+    <div class = 'row'>
+        <div class = 'col-md-2'>
+            <a href = '[% c.crud_url({action => 'list', format => 'html'}) %]'>Back to [% c.stash('result_set_name')%] list</a>
+        </div>
+        <div class = 'col-md-offset-9 col-md-1'>
+            <div class="btn-group" style="white-space: nowrap;">
+                <button class="btn btn-xs btn-default" id = 'edit-button'>
+                    <i class="icon-pencil"></i>
+                </button>
+                <button class="btn btn-xs btn-danger" id = 'delete-button'>
+                    <i class="icon-remove"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <br>
+
+    <div class = 'col-md-12' id = 'record'>
+        <div style = 'text-align : center'>
+            <i class = 'icon-spinner icon-spin icon-4x'></i>
+        </div>
+    </div>
+</div>
+[%- END -%]
+[%-
+    content = PROCESS content;
+    content = content.replace("\n", "\\\n");
+    content = content.replace('"', '\\"');
+-%]
+
+
+
+<script>
+
+    $(function() {
+
+        var $content = $("[% content %]");
+        var elems = scrubAndAppend($content);
+
+        elems['edit-button'].on(
+            'click',
+            function (e) {
+            console.log('click to edit...');
+                location.href = "[% c.crud_url({'action' => 'edit', 'id' => c.param('id'), format => 'html'}) %]";
+                console.log("[% c.crud_url({'action' => 'edit', 'id' => c.param('id'), format => 'html'}) %]");
+            }
+        );
+
+        var delete_title;
+
+        elems['delete-button'].on(
+            'click',
+            function (e) {
+                var $deleteModal = $.jqElem('div').kbaseDeletePrompt(
+                    {
+                        name : delete_title,
+                        callback :
+                            function(e, $prompt) {
+                                $prompt.closePrompt();
+                                location.href = "[% c.crud_url({'action' => 'delete', 'id' => c.param('id')}) %]";
+                            }
+                        ,
+                    }
+                );
+
+                $deleteModal.openPrompt();
+            }
+        );
+
+        var json_href = location.href;
+        json_href = json_href.replace(/\.html.*/, '.json');
+
+        $.ajax({
+            url: json_href,
+            dataType: "json",
+            type: 'GET',
+            success: function (data, status, xhr) {
+
+                [% IF c.stash('success_callback') %]
+                    [% c.stash('success_callback') %]
+                [% END %]
+
+                elems['record'].kbaseTable(
+                    {
+                        striped : false,
+                        hover   : false,
+                        row_callback : function (cell, header, row, $kbtable) {
+
+                            var tpl_callback = function() { return undefined };
+
+                            [% IF c.stash('row_callback') %]
+                                tpl_callback = [% c.stash('row_callback') %]
+                            [% END %]
+
+                            var tpl_val = tpl_callback(cell, header, row, $kbtable);
+
+                            if (tpl_val) {
+                                return tpl_val;
+                            }
+                            else {
+
+                                if (cell.type == 'th') {
+                                    if (cell.label) {
+                                        return cell.label;
+                                    }
+                                    else {
+                                        return ucfirst(cell.value);
+                                    }
+                                }
+                                else {
+                                    return cell.label || cell.value || '&nbsp;';
+                                }
+                            }
+                        },
+                        structure : {
+                            rows : data,
+                            keys :
+                                [% IF c.stash('keys') %]
+                                    [% c.stash('keys') %]
+                                [% ELSIF c.stash('columns') %]
+                                    [
+                                        [% FOR col = c.stash('columns') %]
+                                            "[% col %]",
+                                        [% END %]
+                                    ]
+                                [% ELSE %]
+                                    Object.keys(data).sort()
+                                [% END %]
+                                ,
+                        }
+                    }
+                );
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                elems['record'].text(xhr.responseTest);
+            }
+
+        });
+
+    });
+
+</script>

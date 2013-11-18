@@ -4,8 +4,8 @@ connect_info:
     dsn: "dbi:mysql:warepubs"
     host: "localhost"
     port: 3306
-    user: "kclark"
-    password: "g0p3rl!"
+    user: "thomason"
+    password: ""
 
 search_fields:
   pub:
@@ -31,3 +31,15 @@ download_fields:
     - title
   agency:
     - agency_name
+crud:
+  pubs2:
+    result_set : Pub
+    routes:
+      get:
+        list:
+          columns:
+            - year
+            - title
+            - journal
+            - authors
+            - doc_115

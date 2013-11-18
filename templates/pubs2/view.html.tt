@@ -1,0 +1,56 @@
+[% BLOCK success_callback %]
+    elems['title'].text(data.title);
+    delete_title = data.title;
+[% END %]
+
+[% BLOCK row_callback %]
+    function (cell, header, row, $kb) {
+
+        if (typeof cell.key == 'string' && cell.key.match(/cover|pdf|doc_115/) && cell.value.length == 0) {
+            return 'N/A';
+        }
+        else if (cell.key == 'authors' && cell.value.length) {
+            return cell.value.replace(/,/g, '<br>');
+        }
+
+        return undefined;
+    }
+[% END %]
+
+[% BLOCK keys %]
+    [
+        'title',
+        'journal',
+        'year',
+        'authors',
+        {value : 'pubmed', label : 'PubMed ID : '},
+        {value : 'url', label : 'URL : '},
+        {value : 'data_path', label : 'Data Path : '},
+        'comments',
+        'cover',
+        {value : 'pdf', label : 'PDF : '},
+        {value : 'doc_115', label : '115 : '},
+    ]
+[% END %]
+
+[% rc = PROCESS row_callback %]
+[% r = c.stash('row_callback', rc) %]
+
+[% sc = PROCESS success_callback %]
+[% r = c.stash('success_callback', sc) %]
+
+[% keys = PROCESS keys %]
+[% r = c.stash('keys', keys) %]
+
+[% c.render(c.stash('default_template'), 'partial', 1) %]
+
+<div class = 'row'>
+
+    <div class = 'col-md-12'
+        data-ajax-url = '/funding2/list.ehtml?filter=pub_id%3D[% c.param('id')%]'>
+    </div>
+
+
+</div>
+
+
