@@ -1,0 +1,9 @@
+[%-
+    IF c.stash('record').doc_115.length;
+        d = c.stash('record').doc_115('YES');
+    ELSE;
+        d = c.stash('record').doc_115('NO');
+    END;
+-%]
+
+[%- c.render(c.stash('default_template'), 'partial', 1) -%]

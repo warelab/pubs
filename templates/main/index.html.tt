@@ -4,7 +4,16 @@
 
 You can:
 <ul>
-  <li><a href="[% c.url_for('pub-list') %]">List Pubs</a> ([% pubs.size OR '0' %])</li>
-  <li><a href="[% c.url_for('agency-list') %]">List Agencies</a> ([% agencies.size OR '0' %])</li>
-  <li><a href="[% c.url_for('funding-list') %]">List Fundings</a> ([% fundings.size OR '0' %])</li>
+    <li>
+        <a href="[% c.crud_url('pub', {action => 'list', format => 'html'}) %]">List Pubs</a>
+        (<span data-ajax-url = '/agency2/count' data-ajax-spinnersize = 'icon-1x'></span>)
+    </li>
+    <li>
+        <a href="[% c.crud_url('agency', {action => 'list', format => 'html'}) %]">List Agencies</a>
+        (<span data-ajax-url = '/agency2/count' data-ajax-spinnersize = 'icon-1x'></span>)
+    </li>
+    <li>
+        <a href="[% c.crud_url('funding', {action => 'list', format => 'html'}) %]">List Fundings</a>
+        (<span data-ajax-url = '/pubs2/count' data-ajax-spinnersize = 'icon-1x'></span>)
+    </li>
 </ul>

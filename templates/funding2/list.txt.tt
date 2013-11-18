@@ -1,0 +1,24 @@
+[%-
+
+    column_labels_map = {
+        'year'    = 'Year',
+        'title'   = 'Title',
+        'journal' = 'Journal',
+        'authors' = 'Authors',
+        'doc_115' = '115',
+    };
+
+    column_labels = [];
+    FOR col = c.stash('columns');
+        column_labels.push(column_labels_map.$col || col);
+    END;
+
+    FOR row = c.stash('data_rs');
+        IF (row.doc_115.length);
+            row.doc_115 = "YES";
+        END;
+    END;
+
+    c.render(c.stash('default_template'), 'partial', 1)
+
+-%]

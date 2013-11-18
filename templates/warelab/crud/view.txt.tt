@@ -1,0 +1,22 @@
+[%-
+    IF c.stash('columns') == undef;
+        res = c.stash('columns', c.stash('record').columns().sort());
+    END;
+-%]
+
+[%- IF column_labels == undef;
+    column_labels = c.stash('columns');
+END -%]
+
+[%-
+    label_width = 0;
+    FOR label = column_labels;
+        IF label.length > label_width;
+            label_width = label.length;
+        END;
+    END;
+-%]
+
+[%- FOR label = column_labels -%]
+    [%- label | format("%${label_width}s") %] : [% c.stash('record').$label %]
+[% END -%]

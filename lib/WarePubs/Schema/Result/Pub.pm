@@ -179,7 +179,7 @@ __PACKAGE__->has_many(
   "pub_to_fundings",
   "WarePubs::Schema::Result::PubToFunding",
   { "foreign.pub_id" => "self.pub_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
+  { cascade_copy => 0, cascade_delete => 1 },
 );
 
 

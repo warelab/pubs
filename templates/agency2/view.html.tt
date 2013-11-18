@@ -1,0 +1,35 @@
+[% BLOCK success_callback %]
+    elems['title'].text(data.agency_name);
+    delete_title = data.agency_name;
+[% END %]
+
+[% BLOCK keys %]
+    [
+        {value : 'agency_name', label : 'Agency Name'},
+        {value : 'url_template', label : 'URL Template'},
+    ]
+[% END %]
+
+
+[% sc = PROCESS success_callback %]
+[% r = c.stash('success_callback', sc) %]
+
+[% keys = PROCESS keys %]
+[% r = c.stash('keys', keys) %]
+
+[% c.render(c.stash('default_template'), 'partial', 1) %]
+([% c.stash('default_template') %])
+
+</script>
+
+<div class = 'row'>
+
+    <div class = 'col-md-12'
+        data-ajax-url = '/funding2/list.ehtml?filter=agency_id%3D[% c.param('id')%]'>
+    </div>
+
+    <div class = 'col-md-12'
+        data-ajax-url = '/pubs2/list.ehtml?filter=agency_id%3D[% c.param('id')%]'>
+    </div>
+
+</div>

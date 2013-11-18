@@ -1,0 +1,242 @@
+[%- BLOCK content -%]
+    <div class = 'container'>
+        <div class = 'row'>
+            <div class = 'col-md-2'>
+                <h1>[% c.stash('title') || c.stash('result_set_name') _ 's' %]</h1>
+            </div>
+            <div class = 'col-md-offset-7 col-md-3' id = 'filterrow'>
+                <div class="input-group">
+                    <input type="text" class="form-control" id = 'filterbox'>
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="button" id = 'filterbutton'><i class = 'icon-search' id = 'filtericon'></i></button>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class = 'row' id = 'count_well' style = 'display : none'>
+            <div class = 'col-md-12 well' style = 'text-align : center'>
+                Found <span id = 'count'></span> records
+                <button class = 'btn btn-default btn-xs' id = 'dlbutton'>Download</button>
+            </div>
+        </div>
+
+        <div class = 'row'>
+            <div class = 'col-md-12' id = 'table'>
+                <div style = 'text-align : center'>
+                    <i class = 'icon-spinner icon-spin icon-4x'></i>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+[%- END -%]
+[%-
+    content = PROCESS content;
+    content = content.replace("\n", "\\\n");
+    content = content.replace('"', '\\"');
+-%]
+
+<script>
+
+    var func_definition =
+
+    [% IF c.stash('func_definition') %]
+        [% c.stash('func_definition') %]
+    [% ELSE %]
+        function (cell, header, row, $kbtable) {
+            var $buttons = $.jqElem('div')
+                .addClass('btn-group')
+                .css('white-space', 'nowrap')
+                .append(
+                    $.jqElem('button')
+                        .append($.jqElem('i').addClass('icon-remove'))
+                        .addClass('btn btn-xs btn-danger')
+                        .attr('title', 'delete')
+                        .tooltip()
+                        .on(
+                            'click',
+                            function(e) {
+                              console.log(row);
+
+                                var $deleteModal = $.jqElem('div').kbaseDeletePrompt(
+                                    {
+                                        name : row.title,
+                                        callback :
+                                            function(e, $prompt) {
+                                                $prompt.closePrompt();
+                                                var format = "[% c.crud_url({'action' => 'delete', 'id' => ':id'}) %]";
+                                                var url = format.replace(':id', row["[% c.stash('primary_key') %]"]);
+                                                location.href = url;
+                                            }
+                                        ,
+                                    }
+                                );
+
+                                $deleteModal.openPrompt();
+
+                            }
+                        )
+                );
+            return $buttons;
+        }
+    [% END %]
+
+    $(function() {
+
+        var $content = $("[% content %]");
+        var elems = scrubAndAppend($content);
+
+        var $kbtable;
+
+        var json_href = '[% c.req.url.to_abs %]';
+        json_href = json_href.replace(/\.e?html.*/, '.json');
+        [% IF c.param('filter') %]
+            json_href += '?filter=' + "[% c.param('filter') %]";
+        [% END %]
+
+        var txt_href = '[% c.req.url.to_abs %]';
+
+        var txt_href = txt_href.replace(/\.e?html.*/, '.txt');
+
+        elems['dlbutton'].on(
+            'click',
+            function (e) {
+                e.preventDefault(); e.stopPropagation();
+
+                var filter = "[% c.param('filter') %]";
+                if (filter.length) {
+                    filter += ',' + elems['filterbox'].val();
+                }
+
+                filter = encodeURIComponent(filter);
+
+                location.href = txt_href + '?download&filter=' + filter;
+            }
+        );
+
+        elems['filterbox'].on(
+            'keyup',
+            function (e) {
+                e.preventDefault(); e.stopPropagation();
+
+                if (e.metaKey || e.altKey || e.ctrlKey) {
+                    return;
+                }
+
+                var value = elems['filterbox'].val();
+
+                if (e.keyCode == 27) {
+                    value = elems['filterbox'].val(undefined);
+                }
+
+                if (value.length) {
+                    elems['filtericon'].removeClass('icon-search');
+                    elems['filtericon'].addClass('icon-remove');
+                }
+                else {
+                    elems['filtericon'].addClass('icon-search');
+                    elems['filtericon'].removeClass('icon-remove');
+                }
+
+
+                if ($kbtable) {
+                    $kbtable.refilter(value.length > 2 ? value : undefined);
+                }
+            }
+        );
+
+        elems['filterbutton'].on(
+            'click',
+            function (e) {
+                e.preventDefault(); e.stopPropagation();
+
+                if (elems['filtericon'].hasClass('icon-remove')) {
+                    elems['filterbox'].val(undefined);
+                    elems['filterbox'].trigger('keyup');
+                }
+            }
+        );
+
+        $.ajax({
+            url: json_href,
+            dataType: "json",
+            type: 'GET',
+            success: function (data, status, xhr) {
+console.log("DATA");console.log(data);
+                if (data.length <= 1) {
+                    elems['filterrow'].css('display', 'none');
+                }
+
+                $kbtable = elems['table'].kbaseTable(
+                    {
+                        sortable : true,
+                        headerOptions : {
+                            style : 'white-space : nowrap; min-width : 95x'
+                        },
+
+                        row_callback : function (cell, header, row, $kbtable) {
+
+                            var tpl_callback = function() { return undefined };
+
+                            [% IF c.stash('row_callback') %]
+                                tpl_callback = [% c.stash('row_callback') %]
+                            [% END %]
+
+                            var tpl_val = tpl_callback(cell, header, row, $kbtable);
+
+                            if (tpl_val) {
+                                return tpl_val;
+                            }
+
+                            else if (header == "[% c.stash('view_header') %]") {
+                                var key = "[% c.stash('primary_key') %]";
+                                var format = "[% c.crud_url({'action' => 'view', 'id' => ':id', 'format' => 'html'}) %]";
+                                var url = format.replace(':id', row[key]);
+
+                                return $.jqElem('a')
+                                    .attr('href', url)
+                                    .append(cell);
+                            }
+                            else if (header == 'func') {
+                                return func_definition(cell, header, row, $kbtable);
+                            }
+                            else {
+                                return cell || '&nbsp;';
+                            }
+                        },
+
+                        structure : {
+                            header :
+                                [% IF c.stash('header') %]
+                                    [% c.stash('header') %]
+                                [% ELSE %]
+                                    [
+                                        [% FOR col = c.stash('columns') %]
+                                            "[% col %]",
+                                        [% END %]
+                                    ]
+                                [% END %]
+                            ,
+                            rows : data
+                        }
+                    }
+                );
+
+                elems['count_well'].show();
+                elems['count'].kb_bind($kbtable, 'numRows');
+            },
+            error: function (jqXHR) {
+                elems['table'].html(
+                    $('<div></div>')
+                        .addClass('alert alert-danger')
+                        .append("Error loading: <i>" + json_href + '</i><br>')
+                        .append("<b>" + jqXHR.status + ' : ' + jqXHR.statusText + "</b>")
+                )
+            }
+
+        });
+
+    });
+</script>
