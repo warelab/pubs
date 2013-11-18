@@ -8,6 +8,7 @@ license        'MIT';
 perl_version   '5.010';
 
 # Specific dependencies
+requires       'DBIx::Class'                     => '0';
 requires       'Mojolicious'                     => '4.42';
 requires       'Mojolicious::Plugin::TtRenderer' => 0;
 requires       'Mojolicious::Plugin::YamlConfig' => 0;
